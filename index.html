@@ -1,0 +1,1539 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOULS — Treino de Reflexos</title>
+<style>
+  *{box-sizing:border-box;}
+  :root{
+    --bg:#0a0b12; --bg2:#0d0f1a;
+    --card:rgba(20,22,38,.72); --card2:rgba(28,30,52,.8);
+    --line:rgba(124,92,224,.22); --line2:rgba(124,92,224,.42);
+    --txt:#eef1ff; --mut:#9aa2c8; --mut2:#6f77a0;
+    --pur:#8a6cf0; --pur2:#a855f7; --cya:#22d3ee; --mag:#ec4899; --gold:#e7c98b;
+  }
+  html,body{height:100%;}
+  body{position:relative;margin:0;font-family:system-ui,'Segoe UI',Arial,sans-serif;color:var(--txt);
+    background:
+      radial-gradient(900px 520px at 12% -5%,#2a1a6e55 0%,transparent 60%),
+      radial-gradient(900px 520px at 100% 108%,#12306b55 0%,transparent 60%),
+      radial-gradient(600px 400px at 50% 50%,#ec489914 0%,transparent 70%),
+      var(--bg);
+    background-attachment:fixed;}
+  a{color:inherit;}
+  /* ===== App shell (dashboard) ===== */
+  .app{display:grid;grid-template-columns:238px 1fr;gap:18px;max-width:1360px;margin:0 auto;padding:18px;min-height:100vh;}
+  /* Sidebar */
+  .sidebar{display:flex;flex-direction:column;gap:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:20px;padding:20px 16px;backdrop-filter:blur(10px);box-shadow:0 18px 50px #0008;position:sticky;top:18px;height:calc(100vh - 36px);}
+  .logo{display:flex;align-items:center;gap:10px;padding:4px 6px 14px;border-bottom:1px solid var(--line);}
+  .logo .dot{width:34px;height:34px;border-radius:11px;background:linear-gradient(135deg,var(--pur2),var(--cya));
+    display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 18px #8a6cf0aa;}
+  .logo b{font-size:20px;font-weight:900;letter-spacing:.26em;background:linear-gradient(90deg,var(--gold),#fff6dd,var(--gold));
+    -webkit-background-clip:text;background-clip:text;color:transparent;}
+  .nav{display:flex;flex-direction:column;gap:6px;flex:1;}
+  .nav .lbl{font-size:10px;letter-spacing:.18em;color:var(--mut2);text-transform:uppercase;margin:6px 8px 2px;}
+  .nav a.item,.nav button.item{display:flex;align-items:center;gap:11px;width:100%;text-align:left;text-decoration:none;
+    background:transparent;border:0;color:var(--mut);font-size:14px;font-weight:600;padding:11px 12px;border-radius:12px;cursor:pointer;
+    transition:.15s;font-family:inherit;}
+  .nav .item .ic{width:20px;text-align:center;font-size:16px;}
+  .nav .item:hover{background:#ffffff0c;color:var(--txt);}
+  .nav .tab.active{background:linear-gradient(135deg,#8a6cf033,#22d3ee22);color:#fff;
+    box-shadow:inset 0 0 0 1px var(--line2),0 0 18px #8a6cf033;}
+  .nav .tab.active .ic{filter:drop-shadow(0 0 6px #8a6cf0);}
+  .nav .item.open{background:linear-gradient(135deg,#22d3ee22,#8a6cf033);color:#fff;box-shadow:inset 0 0 0 1px var(--line2);}
+  .nav .item.open .ic{filter:drop-shadow(0 0 6px var(--cya));}
+  .profile{display:flex;align-items:center;gap:11px;background:#ffffff08;border:1px solid var(--line);
+    border-radius:14px;padding:11px;position:relative;}
+  .ownerdot{position:absolute;right:7px;bottom:5px;font-size:10px;line-height:1;color:var(--mut2);opacity:.25;cursor:pointer;padding:3px;user-select:none;transition:opacity .2s;}
+  .ownerdot:hover{opacity:.6;}
+  .ownerlbl{position:absolute;right:8px;top:8px;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);background:#ffffff10;border:1px solid var(--line2);border-radius:8px;padding:4px 8px;cursor:pointer;transition:background .15s,transform .1s;}
+  .ownerlbl:hover{background:linear-gradient(135deg,#e7c98b33,#8a6cf033);transform:translateY(-1px);}
+  .profile .av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--mag),var(--pur2));
+    display:flex;align-items:center;justify-content:center;font-weight:900;box-shadow:0 0 14px #ec489977;}
+  .profile .nm{font-weight:800;font-size:14px;}
+  .profile .rk{font-size:11px;color:var(--gold);letter-spacing:.1em;}
+  /* Main column */
+  .main{display:flex;flex-direction:column;gap:16px;min-width:0;}
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+    background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 20px;backdrop-filter:blur(10px);}
+  .topbar .hello{font-size:11px;letter-spacing:.22em;color:var(--cya);text-transform:uppercase;font-weight:700;}
+  .topbar h1{margin:2px 0 3px;font-size:clamp(20px,3vw,30px);font-weight:900;}
+  .topbar p{margin:0;color:var(--mut);font-size:13px;}
+  .topbar .search{display:flex;align-items:center;gap:9px;background:#0d0f1e;border:1px solid var(--line);
+    border-radius:12px;padding:10px 14px;color:var(--mut2);font-size:13px;min-width:210px;}
+  .topbar .search input{background:transparent;border:0;outline:none;color:var(--txt);font-size:13px;width:100%;font-family:inherit;}
+  /* Stat cards */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+  .stat{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:16px 18px;backdrop-filter:blur(8px);transition:.18s;}
+  .stat:hover{border-color:var(--line2);transform:translateY(-2px);}
+  .stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px;}
+  .stat.s1:before{background:linear-gradient(var(--pur2),var(--pur));box-shadow:0 0 16px var(--pur);}
+  .stat.s2:before{background:linear-gradient(var(--cya),#0ea5b7);box-shadow:0 0 16px var(--cya);}
+  .stat.s3:before{background:linear-gradient(var(--mag),#be1d6b);box-shadow:0 0 16px var(--mag);}
+  .stat.s4:before{background:linear-gradient(var(--gold),#b2863d);box-shadow:0 0 16px var(--gold);}
+  .stat span{display:flex;align-items:center;gap:7px;color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;}
+  .stat strong{display:block;margin-top:7px;font-size:28px;font-weight:900;letter-spacing:.01em;}
+  /* Controls toolbar */
+  .controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);
+    border-radius:16px;padding:14px 16px;backdrop-filter:blur(8px);}
+  .controls label{display:flex;align-items:center;gap:8px;color:var(--mut);font-size:13px;font-weight:600;}
+  button,select{background:#1a1838;color:var(--txt);border:1px solid var(--line2);border-radius:11px;padding:10px 15px;
+    font-weight:700;cursor:pointer;font-size:13px;font-family:inherit;transition:.15s;}
+  select{background:#141230;}
+  button:hover,select:hover{border-color:var(--pur2);}
+  button:disabled{opacity:.4;cursor:not-allowed;}
+  #start{background:linear-gradient(135deg,var(--pur2),var(--cya));color:#07091a;border:0;box-shadow:0 0 20px #8a6cf066;letter-spacing:.03em;}
+  #start:hover{box-shadow:0 0 28px #8a6cf0aa;transform:translateY(-1px);}
+  button.secondary{background:#161533;color:var(--mut);}
+  .customtime{display:none;align-items:center;gap:6px;color:var(--mut);font-size:13px;}
+  .customtime.show{display:flex;}
+  .customtime input{width:60px;padding:9px 8px;border-radius:9px;border:1px solid var(--line2);background:#141230;color:#fff;font-size:13px;text-align:center;}
+  .customtime small{color:var(--mut2);}
+  .typeopt{display:none;align-items:center;gap:8px;color:var(--mut);}
+  body.play-type .typeopt{display:flex;}
+  /* Now Playing card = arena */
+  .nowcard{position:relative;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;
+    backdrop-filter:blur(10px);box-shadow:0 18px 50px #0007;}
+  .nowcard .nowtag{position:absolute;left:24px;top:-11px;z-index:3;background:linear-gradient(135deg,var(--pur2),var(--cya));
+    color:#07091a;font-size:10px;font-weight:900;letter-spacing:.16em;padding:5px 12px;border-radius:99px;box-shadow:0 0 18px #8a6cf088;}
+  #arena{position:relative;isolation:isolate;width:100%;height:min(58vh,520px);min-height:330px;overflow:hidden;
+    border:1px solid var(--line2);border-radius:14px;cursor:crosshair;touch-action:manipulation;
+    background:
+      linear-gradient(90deg,#0a0a1ed9 0%,#0a0a1e55 45%,#0a0a1ed9 100%),
+      radial-gradient(ellipse at 20% 30%,#8a6cf055,transparent 50%),
+      radial-gradient(ellipse at 80% 70%,#22d3ee44,transparent 50%),
+      radial-gradient(ellipse at 50% 50%,#ec489922,transparent 55%),
+      linear-gradient(#2d2c6a44 1px,transparent 1px),
+      linear-gradient(90deg,#2d2c6a44 1px,transparent 1px),
+      linear-gradient(135deg,#120f2e,#171036 50%,#0a0d26 100%);
+    background-size:auto,auto,auto,auto,36px 36px,36px 36px,auto;}
+  #arena .morgan-bg{position:absolute;z-index:-1;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:clamp(56px,16vw,190px);font-weight:900;letter-spacing:.14em;color:transparent;
+    background:linear-gradient(100deg,#6b4f27 0%,#6b4f27 35%,#f6e2b0 50%,#6b4f27 65%,#6b4f27 100%);background-size:250% 100%;
+    -webkit-background-clip:text;background-clip:text;opacity:.28;pointer-events:none;user-select:none;
+    animation:morganShine 5s linear infinite,morganFloat 6s ease-in-out infinite,morganGlow 3.5s ease-in-out infinite;}
+  @keyframes morganShine{from{background-position:150% 0}to{background-position:-50% 0}}
+  @keyframes morganFloat{0%,100%{transform:translateY(-6px) scale(1)}50%{transform:translateY(8px) scale(1.03)}}
+  @keyframes morganGlow{0%,100%{filter:drop-shadow(0 0 10px #b28a4b44)}50%{filter:drop-shadow(0 0 34px #e7c98bcc)}}
+  #arena .ember{position:absolute;z-index:1;bottom:-12px;width:5px;height:5px;border-radius:50%;background:var(--gold);
+    box-shadow:0 0 10px var(--gold);opacity:0;pointer-events:none;animation:rise linear infinite;}
+  @keyframes rise{0%{opacity:0;transform:translate(0,0) scale(.6)}15%{opacity:.8}100%{opacity:0;transform:translate(var(--dx,20px),-560px) scale(1.1)}}
+  @media (prefers-reduced-motion:reduce){#arena .morgan-bg,#arena .ember{animation:none;}#arena .ember{display:none;}}
+  #arena .scene-vignette{position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(0deg,#05070bc9,transparent 38%,#05070b55);}
+  #arena .target,#arena .hit{z-index:2;}
+  .target{position:absolute;border-radius:50%;transform:translate(-50%,-50%);width:52px;height:52px;border:4px solid #f8fbff;
+    background:radial-gradient(circle,#ffdf70 0 20%,#ff4f6d 22% 43%,#fff 45% 60%,#ff4f6d 62%);box-shadow:0 0 18px #ff4f6d99;cursor:pointer;}
+  .target:before,.target:after{content:"";position:absolute;background:#fff;}
+  .target:before{width:2px;height:70px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.65;}
+  .target:after{height:2px;width:70px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.65;}
+  .crosshair{display:none;position:absolute;z-index:6;width:38px;height:38px;transform:translate(-50%,-50%);pointer-events:none;
+    background:radial-gradient(circle,#fff 0 2px,transparent 3px);filter:drop-shadow(0 0 6px var(--cya));transition:width .08s,height .08s;}
+  .crosshair.ch-classic:before,.crosshair.ch-classic:after{content:"";position:absolute;}
+  .crosshair.ch-classic:before{left:50%;top:0;width:2px;height:100%;transform:translateX(-50%);background:linear-gradient(var(--cya) 0 32%,transparent 32% 68%,var(--cya) 68%);}
+  .crosshair.ch-classic:after{top:50%;left:0;height:2px;width:100%;transform:translateY(-50%);background:linear-gradient(90deg,var(--cya) 0 32%,transparent 32% 68%,var(--cya) 68%);}
+  .crosshair.ch-classic.fire{width:28px;height:28px;}
+  .crosshair:not(.ch-classic){background:none;filter:none;}
+  .crosshair>i,.crosshair>b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;}
+  .crosshair .emo{font-size:30px;line-height:1;filter:drop-shadow(0 0 5px currentColor);transition:transform .12s,filter .12s;}
+  @keyframes chspin{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+  @keyframes chspinR{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(-360deg)}}
+  @keyframes chpulse{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(.85)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
+  body.mode-desktop:not(.play-type) #arena.playing,body.mode-desktop:not(.play-type) #arena.playing .target{cursor:none;}
+  body.mode-desktop:not(.play-type) #arena.playing .crosshair.on{display:block;}
+  /* ===== Miras da loja (skins) ===== */
+  .ch-swords{color:#ffd76a;}
+  .ch-swords .emo{animation:chspin 7s linear infinite;}
+  .ch-swords.fire .emo{filter:drop-shadow(0 0 13px #ffd76a) brightness(1.4);}
+  .ch-runic{color:#9b7bff;}
+  .ch-runic .rring{width:40px;height:40px;border:2px solid #9b7bff88;border-radius:50%;box-shadow:0 0 8px #9b7bff;animation:chpulse 2.4s ease-in-out infinite;}
+  .ch-runic .rspin{width:0;height:0;animation:chspin 5s linear infinite;}
+  .ch-runic .rune{position:absolute;left:50%;top:50%;font-size:10px;color:#cbb8ff;text-shadow:0 0 5px #9b7bff;}
+  .ch-runic .rspin .rune:nth-child(1){transform:translate(-50%,-50%) rotate(0deg) translateY(-18px);}
+  .ch-runic .rspin .rune:nth-child(2){transform:translate(-50%,-50%) rotate(60deg) translateY(-18px);}
+  .ch-runic .rspin .rune:nth-child(3){transform:translate(-50%,-50%) rotate(120deg) translateY(-18px);}
+  .ch-runic .rspin .rune:nth-child(4){transform:translate(-50%,-50%) rotate(180deg) translateY(-18px);}
+  .ch-runic .rspin .rune:nth-child(5){transform:translate(-50%,-50%) rotate(240deg) translateY(-18px);}
+  .ch-runic .rspin .rune:nth-child(6){transform:translate(-50%,-50%) rotate(300deg) translateY(-18px);}
+  .ch-runic .rdot{width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 0 6px #9b7bff;}
+  .ch-runic.fire .rring{box-shadow:0 0 16px #cbb8ff;border-color:#cbb8ff;}
+  .ch-slash{color:#5fe3ff;}
+  .ch-slash .slarc{width:36px;height:36px;border-radius:50%;border:2px solid transparent;border-top-color:#5fe3ff;border-right-color:#bff6ff;box-shadow:0 0 8px #5fe3ff;animation:chspin .9s linear infinite;}
+  .ch-slash .slbl{width:2px;height:30px;background:linear-gradient(#fff,#5fe3ff,transparent);box-shadow:0 0 8px #5fe3ff;animation:slswing 1.2s ease-in-out infinite;}
+  @keyframes slswing{0%,100%{transform:translate(-50%,-50%) rotate(-35deg)}50%{transform:translate(-50%,-50%) rotate(35deg)}}
+  .ch-slash.fire .slarc{animation-duration:.4s;}
+  .ch-blades{color:#ff7a7a;}
+  .ch-blades .bgrp{width:0;height:0;animation:bgrp 1.8s ease-in-out infinite;}
+  @keyframes bgrp{0%,100%{transform:translate(-50%,-50%) scale(.7) rotate(0)}50%{transform:translate(-50%,-50%) scale(1.15) rotate(25deg)}}
+  .ch-blades .bld{position:absolute;left:50%;top:50%;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:12px solid #ff8a8a;filter:drop-shadow(0 0 4px #ff5a5a);}
+  .ch-blades .bgrp .bld:nth-child(1){transform:translate(-50%,-50%) rotate(0deg) translateY(-16px);}
+  .ch-blades .bgrp .bld:nth-child(2){transform:translate(-50%,-50%) rotate(90deg) translateY(-16px);}
+  .ch-blades .bgrp .bld:nth-child(3){transform:translate(-50%,-50%) rotate(180deg) translateY(-16px);}
+  .ch-blades .bgrp .bld:nth-child(4){transform:translate(-50%,-50%) rotate(270deg) translateY(-16px);}
+  .ch-blades .cdot{width:4px;height:4px;border-radius:50%;background:#fff;box-shadow:0 0 6px #ff5a5a;}
+  .ch-blades.fire .bgrp{animation-duration:.7s;}
+  .ch-energy{color:#58f5c0;}
+  .ch-energy .orbit{width:0;height:0;animation:chspin 2.6s linear infinite;}
+  .ch-energy .orb{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#7afcd3;box-shadow:0 0 8px #58f5c0;}
+  .ch-energy .orbit .orb:nth-child(1){transform:translate(-50%,-50%) rotate(0deg) translateX(16px);}
+  .ch-energy .orbit .orb:nth-child(2){transform:translate(-50%,-50%) rotate(120deg) translateX(16px);}
+  .ch-energy .orbit .orb:nth-child(3){transform:translate(-50%,-50%) rotate(240deg) translateX(16px);}
+  .ch-energy .core{width:5px;height:5px;border-radius:50%;background:#eafff8;box-shadow:0 0 10px #58f5c0;animation:chpulse 1.4s ease-in-out infinite;}
+  .ch-energy.fire .orbit{animation-duration:1s;}
+  .ch-daggers{color:#d7e3ff;}
+  .ch-daggers .dspin{width:0;height:0;animation:chspin 3.5s linear infinite;}
+  .ch-daggers .d{position:absolute;left:50%;top:50%;font-size:17px;filter:drop-shadow(0 0 4px #9fd0ff);}
+  .ch-daggers .dspin .d:nth-child(1){transform:translate(-50%,-50%) rotate(0deg) translateY(-17px);}
+  .ch-daggers .dspin .d:nth-child(2){transform:translate(-50%,-50%) rotate(90deg) translateY(-17px);}
+  .ch-daggers .dspin .d:nth-child(3){transform:translate(-50%,-50%) rotate(180deg) translateY(-17px);}
+  .ch-daggers .dspin .d:nth-child(4){transform:translate(-50%,-50%) rotate(270deg) translateY(-17px);}
+  .ch-daggers.fire .dspin{animation-duration:1.4s;}
+  .ch-katana{color:#bfefff;}
+  .ch-katana .kat{font-size:26px;filter:drop-shadow(0 0 6px #bfefff);animation:kcut 1.6s ease-in-out infinite;}
+  @keyframes kcut{0%,100%{transform:translate(-50%,-50%) rotate(-18deg)}50%{transform:translate(-50%,-50%) rotate(18deg) scale(1.08)}}
+  .ch-katana .kspark{width:30px;height:2px;background:linear-gradient(90deg,transparent,#fff,transparent);box-shadow:0 0 8px #bfefff;animation:kspark 1.6s ease-in-out infinite;}
+  @keyframes kspark{0%,100%{opacity:0;transform:translate(-50%,-50%) rotate(-18deg)}50%{opacity:1;transform:translate(-50%,-50%) rotate(18deg)}}
+  .ch-katana.fire .kat{filter:drop-shadow(0 0 12px #fff);}
+  .ch-axe{color:#ffb15a;}
+  .ch-axe .axe{font-size:28px;filter:drop-shadow(0 0 6px #ffb15a);animation:axesw 1.9s ease-in-out infinite;}
+  @keyframes axesw{0%,100%{transform:translate(-50%,-50%) rotate(-22deg) scale(1)}50%{transform:translate(-50%,-50%) rotate(22deg) scale(1.12)}}
+  .ch-axe.fire .axe{animation-duration:.7s;filter:drop-shadow(0 0 13px #ff8a3a);}
+  .ch-scythe{color:#b388ff;}
+  .ch-scythe .scy{font-size:26px;filter:drop-shadow(0 0 7px #7a3dff) hue-rotate(-20deg);animation:chspin 4.5s linear infinite;}
+  .ch-scythe .scdot{width:4px;height:4px;border-radius:50%;background:#d9c2ff;box-shadow:0 0 8px #7a3dff;}
+  .ch-scythe.fire .scy{filter:drop-shadow(0 0 14px #9a5dff) hue-rotate(-20deg);animation-duration:1.8s;}
+  .ch-divine{color:#ffe08a;}
+  .ch-divine .dvring{width:42px;height:42px;border:2px solid #ffe08a99;border-radius:50%;box-shadow:0 0 12px #ffd76a,inset 0 0 8px #ffd76a66;animation:chpulse 2.2s ease-in-out infinite;}
+  .ch-divine .dvspin{width:0;height:0;animation:chspin 6s linear infinite;}
+  .ch-divine .dvbl{position:absolute;left:50%;top:50%;width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-bottom:11px solid #fff2c2;filter:drop-shadow(0 0 5px #ffd76a);}
+  .ch-divine .dvspin .dvbl:nth-child(1){transform:translate(-50%,-50%) rotate(0deg) translateY(-18px);}
+  .ch-divine .dvspin .dvbl:nth-child(2){transform:translate(-50%,-50%) rotate(90deg) translateY(-18px);}
+  .ch-divine .dvspin .dvbl:nth-child(3){transform:translate(-50%,-50%) rotate(180deg) translateY(-18px);}
+  .ch-divine .dvspin .dvbl:nth-child(4){transform:translate(-50%,-50%) rotate(270deg) translateY(-18px);}
+  .ch-divine .dvc{font-size:14px;color:#fff6d5;text-shadow:0 0 10px #ffd76a;animation:chpulse 1.8s ease-in-out infinite;}
+  .ch-divine.fire .dvring{box-shadow:0 0 20px #fff,inset 0 0 12px #ffd76a;}
+  .target.key{background:radial-gradient(circle at 35% 30%,var(--pur),#2a1a6e 70%);border:3px solid var(--gold);
+    box-shadow:0 0 22px #8a6cf099;color:#fff;font-weight:900;font-family:inherit;display:flex;align-items:center;justify-content:center;}
+  .target.key:before,.target.key:after{display:none;}
+  .target.key.wrong{border-color:#ff4f6d;box-shadow:0 0 26px #ff4f6d;animation:shake .22s;}
+  @keyframes shake{0%,100%{transform:translate(-50%,-50%)}25%{transform:translate(calc(-50% - 6px),-50%)}75%{transform:translate(calc(-50% + 6px),-50%)}}
+  .target.word{padding:10px 22px !important;border-radius:999px;letter-spacing:.06em;white-space:nowrap;}
+  .target.word .done{color:var(--gold);}
+  .hit{position:absolute;pointer-events:none;color:var(--gold);font-weight:900;font-size:19px;animation:pop .45s ease-out forwards;z-index:4;}
+  @keyframes pop{from{opacity:1;transform:translate(-50%,-50%) scale(.7)}to{opacity:0;transform:translate(-50%,-100%) scale(1.2)}}
+  /* On-screen keyboard + wordbox */
+  .kbd{display:none;flex-direction:column;align-items:center;gap:6px;width:100%;}
+  body.play-type.tm-keys.mode-mobile .kbd{display:flex;}
+  .kbd .row{display:flex;gap:5px;width:100%;justify-content:center;}
+  .kbd button{flex:1 1 0;max-width:48px;padding:13px 0;font-size:16px;text-transform:uppercase;background:#1a1838;color:#fff;border:1px solid var(--line2);touch-action:manipulation;}
+  .kbd button:active{background:var(--pur);}
+  .wordbox{display:none;width:100%;}
+  body.play-type.tm-words .wordbox{display:block;}
+  .wordbox input{text-transform:lowercase;width:100%;padding:14px 16px;font-size:18px;border-radius:12px;border:1px solid var(--line2);
+    background:#0f0d2a;color:#fff;text-align:center;outline:none;font-family:inherit;}
+  .wordbox input:focus{border-color:var(--cya);box-shadow:0 0 14px #22d3ee44;}
+  /* Footer */
+  footer{text-align:center;color:var(--mut2);font-size:13px;padding:6px 8px 4px;}
+  .verse{max-width:620px;margin:12px auto 0;color:#c2cae6;font-style:italic;line-height:1.55;}
+  .verse em{color:var(--gold);font-size:12px;}
+  .by{margin-top:8px;color:var(--gold);font-weight:800;letter-spacing:.12em;}
+  /* Overlay inside arena */
+  .overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;
+    background:#0b0a24d8;z-index:5;backdrop-filter:blur(2px);}
+  .overlay.hidden{display:none;}
+  .panel{max-width:480px;}
+  .panel h2{margin:0 0 8px;font-size:26px;}
+  .panel p{line-height:1.5;margin-bottom:16px;color:var(--mut);}
+  .panel button{background:linear-gradient(135deg,var(--pur2),var(--cya));color:#07091a;border:0;padding:12px 22px;font-size:15px;box-shadow:0 0 22px #8a6cf066;}
+  /* Brand watermark */
+  .brand{text-align:center;color:var(--gold);font-size:12px;font-weight:900;letter-spacing:.22em;opacity:.55;text-shadow:0 2px 10px #000;pointer-events:none;padding:4px 0 18px;}
+  /* Device screen */
+  .device-screen{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:20px;
+    background:radial-gradient(ellipse at 20% 10%,#2a1a6e,transparent 55%),radial-gradient(ellipse at 85% 95%,#12306b,transparent 55%),#080a1cf5;text-align:center;}
+  .device-screen.hidden{display:none;}
+  .device-panel{max-width:520px;width:100%;}
+  .device-brand{font-size:clamp(28px,6vw,44px);font-weight:900;letter-spacing:.3em;margin-bottom:14px;
+    background:linear-gradient(90deg,var(--gold),#fff6dd,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .device-panel h2{margin:0 0 6px;font-size:26px;}
+  .device-panel p{margin-bottom:22px;color:var(--mut);}
+  .device-options{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+  .device-btn{position:relative;flex:1 1 200px;max-width:240px;padding:26px 16px;border-radius:16px;background:var(--card2);
+    color:var(--txt);border:1px solid var(--line2);font-size:18px;display:flex;flex-direction:column;align-items:center;gap:8px;transition:.12s;}
+  .device-btn:hover{transform:translateY(-3px);border-color:var(--cya);}
+  .device-btn .ico{font-size:42px;line-height:1;}
+  .device-btn small{color:var(--mut);font-weight:500;font-size:12px;}
+  .device-btn.suggested{border-color:var(--cya);box-shadow:0 0 22px #22d3ee55;}
+  .device-btn.suggested:after{content:var(--sugtxt,"Sugerido");position:absolute;top:-10px;right:12px;background:linear-gradient(135deg,var(--pur2),var(--cya));color:#07091a;font-size:11px;padding:3px 9px;border-radius:99px;}
+  /* Gear + settings */
+  .gear{position:fixed;top:14px;right:14px;z-index:45;width:44px;height:44px;border-radius:50%;padding:0;font-size:22px;
+    background:var(--card2);border:1px solid var(--line2);transition:transform .3s,border-color .2s;}
+  .gear.open{transform:rotate(90deg);border-color:var(--cya);}
+  .settings{position:fixed;top:66px;right:14px;z-index:45;width:min(312px,calc(100% - 28px));
+    background:linear-gradient(160deg,#0a1830f2,#07111ff2);border:1px solid #22d3ee55;
+    border-radius:14px;padding:16px 18px 18px;box-shadow:0 12px 40px #000c;backdrop-filter:blur(10px);}
+  .set-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .settings h3{margin:0;font-size:16px;color:var(--cya);letter-spacing:.12em;text-shadow:0 0 10px #22d3ee66;}
+  .set-x{width:28px;height:28px;padding:0;border-radius:8px;background:#0e2338;border:1px solid #22d3ee44;color:var(--cya);font-size:14px;line-height:1;}
+  .set-x:hover{border-color:var(--cya);box-shadow:0 0 12px #22d3ee55;}
+  .settings .srow{display:flex;justify-content:space-between;align-items:center;margin:12px 0 5px;font-weight:700;font-size:14px;color:#cfefff;}
+  .settings .srow span{color:var(--cya);min-width:34px;text-align:right;}
+  .settings input[type=range]{width:100%;accent-color:var(--cya);}
+  .set-div{height:1px;background:linear-gradient(90deg,transparent,#22d3ee66,transparent);margin:16px 0 6px;}
+  .settings .trow{display:flex;justify-content:space-between;align-items:center;margin:12px 0;font-weight:700;font-size:14px;color:#cfefff;}
+  .toggle{position:relative;width:52px;height:26px;padding:0;border-radius:20px;background:#0e2338;border:1px solid #2a4a66;transition:.2s;}
+  .toggle i{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#5f7b94;transition:.22s;}
+  .toggle.on{background:linear-gradient(90deg,#0e3a5a,#22d3ee33);border-color:var(--cya);box-shadow:0 0 14px #22d3ee55;}
+  .toggle.on i{left:28px;background:var(--cya);box-shadow:0 0 10px #22d3eecc;}
+  .langsel{display:flex;align-items:center;gap:8px;}
+  .langsel button{width:26px;height:26px;padding:0;border-radius:8px;background:#0e2338;border:1px solid #22d3ee44;color:var(--cya);font-size:16px;line-height:1;}
+  .langsel button:hover{border-color:var(--cya);box-shadow:0 0 10px #22d3ee55;}
+  .langsel #langName{min-width:96px;text-align:center;font-size:12px;color:var(--cya);font-weight:700;}
+  /* Color themes */
+  html[data-theme="gold"]{--pur:#d9a441;--pur2:#f0b429;--cya:#ffce73;--mag:#e0913c;--line:rgba(224,170,60,.22);--line2:rgba(224,170,60,.44);--gold:#ffe3a3;}
+  html[data-theme="blue"]{--pur:#3b82f6;--pur2:#2563eb;--cya:#38bdf8;--mag:#60a5fa;--line:rgba(59,130,246,.22);--line2:rgba(59,130,246,.44);}
+  html[data-theme="green"]{--pur:#22c55e;--pur2:#16a34a;--cya:#4ade80;--mag:#34d399;--line:rgba(34,197,94,.22);--line2:rgba(34,197,94,.44);}
+  html[data-theme="pink"]{--pur:#ec4899;--pur2:#db2777;--cya:#f472b6;--mag:#f9a8d4;--line:rgba(236,72,153,.22);--line2:rgba(236,72,153,.44);}
+  html[data-theme="red"]{--pur:#ef4444;--pur2:#dc2626;--cya:#fb7185;--mag:#f87171;--line:rgba(239,68,68,.22);--line2:rgba(239,68,68,.44);}
+  .themerow{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 4px;}
+  .sw{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid #ffffff22;cursor:pointer;transition:transform .12s,box-shadow .15s;}
+  .sw:hover{transform:scale(1.1);}
+  .sw.active{border-color:#fff;box-shadow:0 0 12px #ffffff66;}
+  .sw.t-purple{background:linear-gradient(135deg,#a855f7,#22d3ee);}
+  .sw.t-gold{background:linear-gradient(135deg,#f0b429,#ffce73);}
+  .sw.t-blue{background:linear-gradient(135deg,#2563eb,#38bdf8);}
+  .sw.t-green{background:linear-gradient(135deg,#16a34a,#4ade80);}
+  .sw.t-pink{background:linear-gradient(135deg,#db2777,#f472b6);}
+  .sw.t-red{background:linear-gradient(135deg,#dc2626,#fb7185);}
+  .set-reset{width:100%;margin-top:4px;padding:11px;border-radius:10px;background:#3a0f14;border:1px solid #ef444466;color:#ff9b9b;font-weight:800;font-size:13px;letter-spacing:.03em;cursor:pointer;}
+  .set-reset:hover{background:#4a1319;border-color:#ef4444;box-shadow:0 0 14px #ef444455;}
+  .reset-warn{color:#ffb3b3;font-weight:700;background:#3a0f1455;border:1px solid #ef444455;border-radius:12px;padding:14px 16px;margin:4px 0 18px;line-height:1.55;}
+  .reset-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+  .btn-danger{background:linear-gradient(135deg,#dc2626,#ef4444)!important;color:#fff!important;box-shadow:0 0 20px #ef444455!important;}
+  .btn-ghost{background:#161533!important;color:var(--txt)!important;border:1px solid var(--line2)!important;box-shadow:none!important;}
+  /* Responsive */
+  @media (max-width:860px){
+    .app{grid-template-columns:1fr;padding:12px;gap:14px;}
+    .sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px;padding:14px;}
+    .logo{border-bottom:0;padding:0 8px 0 0;}
+    .nav{flex-direction:row;flex-wrap:wrap;flex:1;gap:6px;}
+    .nav .lbl{display:none;}
+    .nav .item{width:auto;padding:9px 12px;}
+    .profile{margin-left:auto;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .topbar .search{display:none;}
+  }
+  @media (max-width:480px){.stat strong{font-size:22px;}}
+  /* ===== Full-screen modals (ranking / name / language) ===== */
+  .screen{position:fixed;inset:0;z-index:55;display:none;align-items:center;justify-content:center;padding:20px;
+    background:radial-gradient(ellipse at 20% 10%,#2a1a6e,transparent 55%),radial-gradient(ellipse at 85% 95%,#12306b,transparent 55%),#080a1cf5;}
+  .screen.show{display:flex;}
+  .screen-panel{width:100%;max-width:560px;background:var(--card);border:1px solid var(--line2);border-radius:20px;
+    padding:22px;backdrop-filter:blur(10px);box-shadow:0 20px 60px #000b;}
+  .screen-panel.small{max-width:420px;text-align:center;}
+  .sc-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px;}
+  .sc-head h2{margin:0;font-size:22px;background:linear-gradient(90deg,var(--gold),#fff6dd,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .sc-close{background:#161533;color:var(--mut);border:1px solid var(--line2);border-radius:10px;padding:8px 14px;font-size:13px;}
+  .sc-close:hover{border-color:var(--cya);color:#fff;}
+  .sc-sub{margin:0 0 16px;color:var(--mut);font-size:13px;}
+  .ranklist{display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow:auto;}
+  .rankrow{display:flex;align-items:center;gap:12px;background:#ffffff08;border:1px solid var(--line);border-radius:14px;padding:12px 14px;}
+  .rankrow .pos{width:34px;height:34px;flex:none;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:15px;background:#1a1838;color:var(--mut);}
+  .rankrow .nm{flex:1;min-width:0;font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .rankrow .nm small{display:block;font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--mag);}
+  .rankrow .pts{font-weight:900;font-size:16px;color:var(--gold);white-space:nowrap;}
+  .rankrow.r1{border-color:var(--gold);box-shadow:0 0 20px #e7c98b33;background:linear-gradient(90deg,#e7c98b1a,#ffffff06);}
+  .rankrow.r1 .pos{background:linear-gradient(135deg,var(--gold),#b2863d);color:#1a1200;}
+  .rankrow.r2 .pos{background:linear-gradient(135deg,#cfd6e6,#8b93a8);color:#15171f;}
+  .rankrow.r3 .pos{background:linear-gradient(135deg,#e0a46a,#9c6534);color:#1a1200;}
+  .rankrow.you{border-color:var(--cya);box-shadow:0 0 18px #22d3ee33;}
+  .rankrow.you .pos{background:linear-gradient(135deg,var(--pur2),var(--cya));color:#07091a;}
+  .nameinput{width:100%;padding:14px 16px;font-size:18px;text-align:center;border-radius:12px;border:1px solid var(--line2);
+    background:#0f0d2a;color:#fff;outline:none;margin:4px 0 16px;font-family:inherit;}
+  .nameinput:focus{border-color:var(--cya);box-shadow:0 0 14px #22d3ee44;}
+  .bigbtn{width:100%;padding:13px;font-size:15px;border:0;border-radius:12px;color:#07091a;
+    background:linear-gradient(135deg,var(--pur2),var(--cya));box-shadow:0 0 22px #8a6cf066;}
+  .langlist{display:flex;flex-direction:column;gap:9px;margin-top:10px;}
+  .langopt{width:100%;text-align:left;padding:14px 16px;font-size:15px;font-weight:700;background:#161533;color:var(--txt);
+    border:1px solid var(--line2);border-radius:12px;}
+  .langopt:hover{border-color:var(--cya);transform:translateY(-1px);}
+  .langopt.active{background:linear-gradient(135deg,#8a6cf033,#22d3ee22);border-color:var(--cya);box-shadow:0 0 16px #22d3ee33;}  .finbonus{color:var(--gold);font-weight:800;display:inline-block;margin-top:8px;}
+  /* ===== Loja ===== */
+  .shop-bal{display:flex;align-items:center;gap:8px;margin:6px 0 14px;font-weight:800;font-size:15px;color:var(--gold);}
+  .shop-bal .coin{font-size:18px;}
+  .shoplist{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-height:64vh;overflow:auto;padding:2px;}
+  .shopcard{display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px;background:#ffffff08;border:1px solid var(--line);border-radius:16px;padding:14px 12px;position:relative;}
+  .shopcard.equipped{border-color:var(--cya);box-shadow:0 0 16px #22d3ee33;}
+  .ch-box{width:72px;height:72px;display:grid;place-items:center;border-radius:14px;background:radial-gradient(circle at 50% 45%,#1b1a3d,#0d0c22);border:1px solid var(--line);}
+  .ch-box .crosshair{display:block;position:relative;left:auto;top:auto;transform:none;}
+  .shopcard .nm{font-weight:800;font-size:14px;color:var(--txt);}
+  .shopcard .ds{font-size:11px;line-height:1.35;color:var(--mut);min-height:44px;}
+  .shopcard .pr{font-weight:900;font-size:14px;color:var(--gold);display:flex;align-items:center;gap:5px;}
+  .shopbtn{width:100%;padding:9px;font-size:13px;font-weight:800;border:0;border-radius:10px;cursor:pointer;color:#07091a;background:linear-gradient(135deg,var(--pur2),var(--cya));transition:filter .15s,transform .1s;}
+  .shopbtn:hover{filter:brightness(1.1);transform:translateY(-1px);}
+  .shopbtn.owned{background:#2a2850;color:var(--mut);cursor:default;}
+  .shopbtn.equip{background:linear-gradient(135deg,#e7c98b,#b2863d);}
+  .shopbtn.on{background:#1b3a3f;color:var(--cya);cursor:default;}
+  .shopbtn:disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4);}
+  .shopcard .lock{position:absolute;top:8px;right:10px;font-size:12px;opacity:.6;}
+  @media (max-width:560px){ .shoplist{grid-template-columns:1fr;} }
+  .owner-warn{background:#3a0f16;border:1px solid #ff5a5a66;color:#ff9a9a;border-radius:12px;padding:12px 14px;font-size:13px;font-weight:700;line-height:1.4;margin:6px 0 12px;}
+  .owner-msg{min-height:20px;font-size:13px;font-weight:800;margin-top:10px;}
+  .owner-msg.ok{color:#58f5c0;}
+  .owner-msg.bad{color:#ff7a7a;}
+  .vtimer{margin-top:4px;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--cya);opacity:.85;display:flex;align-items:center;gap:5px;}
+  .vtimer:before{content:"\23f3";font-size:11px;}
+</style>
+</head>
+<body class="tm-keys">
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo"><span class="dot">🎯</span><b>SOULS</b></div>
+    <nav class="nav">
+      <div class="lbl" data-i18n="nav_trainings">Treinos</div>
+      <button class="item tab active" type="button" data-mode="click"><span class="ic">🎯</span><span class="t" data-i18n="nav_reflex">Reflexos</span></button>
+      <button class="item tab" type="button" data-mode="type"><span class="ic">⌨️</span><span class="t" data-i18n="nav_typing">Digitação</span></button>
+      <div class="lbl" data-i18n="nav_game">Jogo</div>
+      <button class="item" id="rankBtn" type="button"><span class="ic">🏆</span><span class="t" data-i18n="nav_ranking">Pontuação</span></button>
+      <button class="item" id="shopBtn" type="button"><span class="ic">🛡️</span><span class="t" data-i18n="nav_shop">Loja</span></button>
+      <button class="item" id="nameBtn" type="button"><span class="ic">🧑</span><span class="t" data-i18n="nav_name">Meu nome</span></button>
+      <button class="item" id="reset" type="button"><span class="ic">🔄</span><span class="t" data-i18n="nav_restart">Reiniciar</span></button>
+      <button class="item" id="changeDevice" type="button"><span class="ic">🖥️</span><span class="t" data-i18n="nav_device">Trocar dispositivo</span></button>
+      <div class="lbl" data-i18n="nav_system">Sistema</div>
+      <button class="item" id="gearBtn" type="button" aria-expanded="false"><span class="ic">⚙️</span><span class="t" data-i18n="nav_settings">Settings</span></button>
+    </nav>
+    <div class="profile"><span class="av" id="profAv">S</span><div><div class="nm" id="profName">Souls</div><div class="rk" data-i18n="profile_sub">O RENASCIDO</div><div class="vtimer" id="vTimer"></div></div><button class="ownerlbl" id="ownerDot" type="button">Owner</button></div>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="hello" data-i18n="hello">Bem-vindo de volta</div>
+        <h1 id="pageTitle">Treino de Reflexos</h1>
+        <p data-i18n="subtitle">Divirta-se treinando, fiz com carinho.</p>
+      </div>
+    </div>
+    <section class="stats">
+      <div class="stat s1"><span data-i18n="st_points">🏆 Pontos</span><strong id="score">0</strong></div>
+      <div class="stat s2"><span data-i18n="st_hits">🎯 Acertos</span><strong id="hits">0</strong></div>
+      <div class="stat s3"><span data-i18n="st_acc">📈 Precisão</span><strong id="accuracy">0%</strong></div>
+      <div class="stat s4"><span data-i18n="st_time">⏱️ Tempo</span><strong id="time">1:00</strong></div>
+    </section>
+    <div class="controls">
+      <label><span data-i18n="lbl_diff">Dificuldade</span>
+        <select id="difficulty">
+          <option value="veryeasy" data-i18n="diff_veryeasy">Muito fácil</option>
+          <option value="easy" data-i18n="diff_easy">Fácil</option>
+          <option value="normal" selected data-i18n="diff_normal">Normal</option>
+          <option value="hard" data-i18n="diff_hard">Difícil</option>
+          <option value="insane" data-i18n="diff_insane">Insano</option>
+        </select>
+      </label>
+      <label><span data-i18n="lbl_time">Tempo</span>
+        <select id="duration">
+          <option value="50" data-i18n="dur_50">50 seg</option>
+          <option value="60" selected data-i18n="dur_60">1 min</option>
+          <option value="70" data-i18n="dur_70">1 min 10 seg</option>
+          <option value="180" data-i18n="dur_180">3 min</option>
+          <option value="300" data-i18n="dur_300">5 min</option>
+          <option value="custom" data-i18n="dur_custom">Personalizado</option>
+        </select>
+      </label>
+      <span class="customtime" id="customTime">
+        <input id="customMin" type="number" min="0" max="30" value="2" inputmode="numeric" aria-label="Minutos"> <span data-i18n="ct_min">min</span>
+        <input id="customSec" type="number" min="0" max="59" value="0" inputmode="numeric" aria-label="Segundos"> <span data-i18n="ct_sec">seg</span>
+        <small data-i18n="ct_hint">(5 seg a 30 min)</small>
+      </span>
+      <label class="typeopt"><span data-i18n="lbl_mode">Modo</span>
+        <select id="typeMode">
+          <option value="keys" selected data-i18n="mode_keys">💻 Desktop (teclas)</option>
+          <option value="words" data-i18n="mode_words">📱 Celular (palavras)</option>
+        </select>
+      </label>
+      <button id="start" data-i18n="btn_start">Começar treino</button>
+      <button id="stop" class="secondary" disabled data-i18n="btn_stop">Parar treino</button>
+    </div>
+    <section class="nowcard">
+      <span class="nowtag" data-i18n="nowtag">AGORA JOGANDO</span>
+      <main id="arena" aria-label="Área de treino">
+        <div class="morgan-bg" aria-hidden="true">MORGAN</div>
+        <div class="scene-vignette"></div>
+        <div class="overlay" id="overlay">
+          <div class="panel">
+            <h2 data-i18n="intro_head">Pronto para treinar?</h2>
+            <p data-i18n="intro_click">Clique ou toque nos alvos assim que aparecerem.</p>
+            <button id="overlayStart" data-i18n="intro_btn">Começar</button>
+          </div>
+        </div>
+      </main>
+    </section>
+    <div class="kbd" id="kbd"></div>
+    <div class="wordbox" id="wordBox"><input id="wordInput" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="text" data-gramm="false" enterkeyhint="done" placeholder="Digite a palavra aqui"></div>
+    <footer><span data-i18n="footer_sign">Souls, o renascido</span><div class="verse"><span data-i18n-html="verse">“Não fui eu que lhe ordenei? Seja forte e corajoso! Não te apavores nem desanimes, pois o Senhor, o Teu Deus, estará contigo por onde quer que andares.”</span><br><em data-i18n="verse_ref">Josué 1:9</em></div><div class="by">by: Souls.</div></footer>
+  </div>
+</div>
+<div class="brand">SOULS</div>
+<div class="device-screen" id="deviceScreen">
+  <div class="device-panel">
+    <div class="device-brand">SOULS</div>
+    <h2 data-i18n="dev_q">Como você vai jogar?</h2>
+    <p data-i18n="dev_sub">Escolha seu dispositivo para ajustar o jogo.</p>
+    <div class="device-options">
+      <button class="device-btn" data-device="mobile"><span class="ico">📱</span><span data-i18n="dev_mobile">Celular</span><small data-i18n="dev_mobile_sub">Toque na tela, alvos maiores</small></button>
+      <button class="device-btn" data-device="desktop"><span class="ico">💻</span><span data-i18n="dev_desktop">Desktop</span><small data-i18n="dev_desktop_sub">PC ou notebook, com mira no mouse</small></button>
+    </div>
+  </div>
+</div>
+<div class="settings" id="settings" hidden>
+  <div class="set-head"><h3 data-i18n="set_title">CONFIGURAÇÕES</h3><button class="set-x" id="setClose" type="button" aria-label="Fechar">✕</button></div>
+  <div class="srow"><label for="sfxVol" data-i18n="set_sound">🔊 Som</label><span id="sfxVal">50</span></div>
+  <input id="sfxVol" type="range" min="0" max="100" value="50">
+  <div class="srow"><label for="musicVol" data-i18n="set_music">🎵 Música</label><span id="musicVal">40</span></div>
+  <input id="musicVol" type="range" min="0" max="100" value="40">
+  <div class="set-div"></div>
+  <div class="trow"><label data-i18n="set_notif">🔔 Notificação</label><button class="toggle on" id="notifToggle" type="button" role="switch" aria-checked="true"><i></i></button></div>
+  <div class="trow"><label data-i18n="set_language">🌐 Idioma</label><div class="langsel"><button id="langPrev" type="button" aria-label="anterior">‹</button><span id="langName">Português (BR)</span><button id="langNext" type="button" aria-label="próximo">›</button></div></div>
+  <div class="set-div"></div>
+  <div class="trow" style="margin-bottom:2px"><label data-i18n="set_colors">🎨 Modos de cores</label></div>
+  <div class="themerow" id="themeRow">
+    <button class="sw t-purple" data-theme="purple" type="button" title="Roxo" aria-label="Roxo"></button>
+    <button class="sw t-gold" data-theme="gold" type="button" title="Dourado" aria-label="Dourado"></button>
+    <button class="sw t-blue" data-theme="blue" type="button" title="Azul" aria-label="Azul"></button>
+    <button class="sw t-green" data-theme="green" type="button" title="Verde" aria-label="Verde"></button>
+    <button class="sw t-pink" data-theme="pink" type="button" title="Rosa" aria-label="Rosa"></button>
+    <button class="sw t-red" data-theme="red" type="button" title="Vermelho" aria-label="Vermelho"></button>
+  </div>
+  <div class="set-div"></div>
+  <button class="set-reset" id="resetProgress" type="button" data-i18n="set_reset">🗑️ Resetar progresso</button>
+</div>
+<div class="screen" id="rankScreen">
+  <div class="screen-panel">
+    <div class="sc-head"><h2 data-i18n="rank_title">Ranking</h2><button class="sc-close" id="rankClose" data-i18n="rank_close">Voltar</button></div>
+    <p class="sc-sub" data-i18n="rank_sub">Os melhores do treino</p>
+    <div class="ranklist" id="rankList"></div>
+  </div>
+</div>
+<div class="screen" id="shopScreen">
+  <div class="screen-panel">
+    <div class="sc-head"><h2 data-i18n="shop_title">Loja de Miras</h2><button class="sc-close" id="shopClose" data-i18n="rank_close">Voltar</button></div>
+    <p class="sc-sub" data-i18n="shop_sub">Compre miras com seus pontos.</p>
+    <div class="shop-bal"><span class="coin">🏆</span><span data-i18n="shop_balance">Seus pontos:</span>&nbsp;<span id="shopBal">0</span></div>
+    <div class="shoplist" id="shopList"></div>
+  </div>
+</div>
+<div class="screen" id="resetScreen">
+  <div class="screen-panel small">
+    <div class="sc-head"><h2 data-i18n="reset_title">Resetar progresso</h2><button class="sc-close" id="resetCancel" data-i18n="reset_cancel">Cancelar</button></div>
+    <p class="reset-warn" data-i18n="reset_warn">⚠️ Atenção! Você vai perder TODAS as miras, TODAS as pontuações, seu nome e todo o progresso. Isso não tem volta.</p>
+    <div class="reset-actions">
+      <button class="btn-ghost" id="resetNo" type="button" data-i18n="reset_no">Cancelar</button>
+      <button class="btn-danger" id="resetYes" type="button" data-i18n="reset_yes">Apagar tudo</button>
+    </div>
+  </div>
+</div>
+<div class="screen" id="ownerScreen">
+  <div class="screen-panel small">
+    <div class="sc-head"><h2 data-i18n="owner_title">Área do Dono</h2><button class="sc-close" id="ownerClose" data-i18n="rank_close">Voltar</button></div>
+    <div class="owner-warn" data-i18n="owner_warn">Somente para o dono. Não tente, ou você perderá pontos.</div>
+    <input id="ownerInput" class="nameinput" type="password" maxlength="32" autocomplete="off" autocapitalize="off" spellcheck="false" data-i18n-ph="owner_ph" placeholder="Digite o código secreto">
+    <button id="ownerConfirm" class="bigbtn" data-i18n="owner_confirm">Confirmar</button>
+    <div class="owner-msg" id="ownerMsg"></div>
+  </div>
+</div>
+<div class="screen" id="nameScreen">
+  <div class="screen-panel small">
+    <div class="sc-head"><h2 data-i18n="name_title">Escolha seu nome</h2><button class="sc-close" id="nameClose" data-i18n="rank_close">Voltar</button></div>
+    <p class="sc-sub" data-i18n="name_sub">Esse nome vai aparecer no seu ranking.</p>
+    <input id="nameInput" class="nameinput" type="text" maxlength="16" autocomplete="off" data-i18n-ph="name_ph" placeholder="Digite seu nome">
+    <button id="nameConfirm" class="bigbtn" data-i18n="name_confirm">Confirmar</button>
+  </div>
+</div>
+<div class="screen" id="langScreen">
+  <div class="screen-panel small">
+    <div class="sc-head"><h2 data-i18n="lang_title">Escolha o idioma</h2><button class="sc-close" id="langClose" data-i18n="rank_close">Voltar</button></div>
+    <div class="langlist">
+      <button class="langopt" data-lang="ptbr">🇧🇷 Português (Brasil)</button>
+      <button class="langopt" data-lang="ptpt">🇵🇹 Português (Portugal)</button>
+      <button class="langopt" data-lang="en">🇬🇧 English</button>
+      <button class="langopt" data-lang="es">🇪🇸 Español</button>
+      <button class="langopt" data-lang="de">🇩🇪 Deutsch</button>
+    </div>
+  </div>
+</div>
+<script>
+// Música original gerada no navegador (Web Audio): pads suaves, harpa e baixo, em Ré menor
+const Music = (() => {
+  const BPM = 72, BEAT = 60 / BPM, BAR = BEAT * 4;
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  const PADS = [[50,57,62,65],[50,58,62,65],[50,58,62,67],[49,57,61,64]]; // Dm, Bb/D, Gm/D, A
+  const BASS = [38, 46, 43, 45];
+  const LEAD = [74, 77, 79, 81, 84];
+  const ARP = [0,1,2,3,2,1,2,3];
+  let ctx = null, master = null, bus = null, timer = null, nextT = 0, bar = 0;
+  let on = false, userMuted = false, ducked = false, vol = 0.4;
+
+  function impulse(c) {
+    const len = Math.floor(c.sampleRate * 3), b = c.createBuffer(2, len, c.sampleRate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = b.getChannelData(ch);
+      for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.6);
+    }
+    return b;
+  }
+  function init() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ctx = new AC();
+    master = ctx.createGain(); master.gain.value = 0;
+    const comp = ctx.createDynamicsCompressor();
+    bus = ctx.createGain();
+    const dry = ctx.createGain(); dry.gain.value = 0.8;
+    const rev = ctx.createConvolver(); rev.buffer = impulse(ctx);
+    const wet = ctx.createGain(); wet.gain.value = 0.55;
+    bus.connect(dry); bus.connect(rev); rev.connect(wet);
+    dry.connect(master); wet.connect(master);
+    master.connect(comp); comp.connect(ctx.destination);
+    return true;
+  }
+  function voice(type, midi, t, dur, peak, attack, lpf, detune) {
+    const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+    o.type = type; o.frequency.value = mtof(midi); o.detune.value = detune || 0;
+    f.type = 'lowpass'; f.frequency.value = lpf;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(peak, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(f); f.connect(g); g.connect(bus);
+    o.start(t); o.stop(t + dur + 0.05);
+  }
+  function pad(midi, t) {
+    [-7, 7].forEach(dt => {
+      const o = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+      o.type = 'sawtooth'; o.frequency.value = mtof(midi); o.detune.value = dt;
+      f.type = 'lowpass'; f.frequency.value = 850;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.028, t + 1.3);
+      g.gain.setValueAtTime(0.028, t + BAR - 0.2);
+      g.gain.linearRampToValueAtTime(0.0001, t + BAR + 1.6);
+      o.connect(f); f.connect(g); g.connect(bus);
+      o.start(t); o.stop(t + BAR + 1.7);
+    });
+  }
+  function scheduleBar(t, i) {
+    const c = i % 4;
+    PADS[c].forEach(m => pad(m, t));
+    voice('triangle', BASS[c], t, BEAT * 3.6, 0.2, 0.04, 520);
+    voice('triangle', BASS[c], t + BEAT * 2, BEAT * 1.8, 0.11, 0.04, 520);
+    const tones = PADS[c].map(m => m + 12);
+    ARP.forEach((k, j) => voice('triangle', tones[k], t + j * BEAT / 2, 1.3, 0.055, 0.01, 2600));
+    if (i % 2 === 1 || Math.random() < 0.3) {
+      const m = LEAD[Math.floor(Math.random() * LEAD.length)];
+      voice('sine', m, t + BEAT * (1 + Math.floor(Math.random() * 3)), 2.4, 0.045, 0.03, 5000);
+    }
+  }
+  function tick() {
+    while (nextT < ctx.currentTime + 1.5) { scheduleBar(nextT, bar++); nextT += BAR; }
+  }
+  function level() { master.gain.setTargetAtTime(on ? vol * (ducked ? 0.55 : 1) : 0, ctx.currentTime, 0.4); }
+  function ui() {
+    const b = document.getElementById('musicBtn');
+    if (b) b.textContent = on ? '🔊' : '🔇';
+  }
+  function start() {
+    if (!ctx && !init()) return;
+    ctx.resume();
+    if (!timer) {
+      if (nextT < ctx.currentTime) nextT = ctx.currentTime + 0.1;
+      tick(); timer = setInterval(tick, 500);
+    }
+    on = true; level(); ui();
+  }
+  function stop() {
+    on = false; if (!ctx) { ui(); return; }
+    level(); ui();
+    setTimeout(() => { if (!on && ctx) { clearInterval(timer); timer = null; ctx.suspend(); } }, 900);
+  }
+  return {
+    autoStart() { if (!userMuted) start(); },
+    toggle() { if (on) { userMuted = true; stop(); } else { userMuted = false; start(); } },
+    setVolume(v) { vol = v; if (ctx) level(); },
+    duck(d) { if (ducked !== d) { ducked = d; if (ctx) level(); } }
+  };
+})();
+// Efeitos sonoros (Web Audio): acerto, erro, palavra completa, início e fim
+const SFX = (() => {
+  let ctx = null, out = null, on = true, streak = 0, level = 0.5;
+  const semi = n => Math.pow(2, n / 12);
+  function init() {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    ctx = new AC();
+    out = ctx.createGain(); out.gain.value = level;
+    const comp = ctx.createDynamicsCompressor();
+    out.connect(comp); comp.connect(ctx.destination);
+    return true;
+  }
+  function tone(type, f0, f1, t, dur, peak, lpf) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(f0, t);
+    if (f1) o.frequency.exponentialRampToValueAtTime(f1, t + dur * 0.8);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(peak, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    if (lpf) {
+      const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = lpf;
+      o.connect(f); f.connect(g);
+    } else o.connect(g);
+    g.connect(out);
+    o.start(t); o.stop(t + dur + 0.03);
+  }
+  function play(name) {
+    if (!on || level === 0) return;
+    if (!ctx && !init()) return;
+    if (ctx.state === 'suspended') ctx.resume();
+    const t = ctx.currentTime + 0.005;
+    switch (name) {
+      case 'hit': { streak++; const k = semi(Math.min(streak - 1, 7)); tone('sine', 880 * k, 1320 * k, t, 0.14, 0.22); tone('triangle', 1760 * k, null, t, 0.08, 0.06); break; }
+      case 'key': { streak++; const k = semi(Math.min(streak - 1, 7)); tone('triangle', 700 * k, 1000 * k, t, 0.1, 0.2, 4000); tone('sine', 1400 * k, null, t, 0.05, 0.05); break; }
+      case 'word': { streak++; tone('sine', 880, null, t, 0.25, 0.2); tone('sine', 1175, null, t + 0.09, 0.35, 0.2); tone('triangle', 1760, null, t + 0.09, 0.2, 0.05); break; }
+      case 'tick': tone('sine', 1500, 1800, t, 0.04, 0.07); break;
+      case 'wrong': streak = 0; tone('sawtooth', 190, 110, t, 0.18, 0.12, 700); break;
+      case 'lost': streak = 0; tone('sine', 260, 180, t, 0.15, 0.07); break;
+      case 'start': [523, 659, 784].forEach((f, i) => tone('triangle', f, null, t + i * 0.09, 0.22, 0.14)); break;
+      case 'end': streak = 0; [784, 659, 523, 392].forEach((f, i) => tone('triangle', f, null, t + i * 0.12, i === 3 ? 0.5 : 0.22, 0.14)); break;
+    }
+  }
+  return { play, setVolume(v) { level = v; if (out) out.gain.value = v; } };
+})();
+window.SFX = SFX;
+window.Music = Music;
+const gearBtn = document.getElementById('gearBtn'), panel = document.getElementById('settings');
+function setPanel(open) {
+  panel.hidden = !open;
+  gearBtn.classList.toggle('open', open);
+  gearBtn.setAttribute('aria-expanded', String(open));
+}
+gearBtn.addEventListener('click', e => { e.stopPropagation(); setPanel(panel.hidden); });
+document.addEventListener('click', e => { if (!panel.hidden && !panel.contains(e.target)) setPanel(false); });
+const musicVol = document.getElementById('musicVol'), sfxVol = document.getElementById('sfxVol');
+musicVol.addEventListener('input', () => { Music.setVolume(musicVol.value / 100); document.getElementById('musicVal').textContent = musicVol.value; });
+sfxVol.addEventListener('input', () => { SFX.setVolume(sfxVol.value / 100); document.getElementById('sfxVal').textContent = sfxVol.value; });
+sfxVol.addEventListener('change', () => SFX.play('word'));
+SFX.setVolume(sfxVol.value / 100);
+const setCloseBtn = document.getElementById('setClose');
+if (setCloseBtn) setCloseBtn.addEventListener('click', e => { e.stopPropagation(); setPanel(false); });
+const notifToggle = document.getElementById('notifToggle');
+if (notifToggle) {
+  let nOn = localStorage.getItem('souls_notif') !== 'off';
+  const paintNotif = () => { notifToggle.classList.toggle('on', nOn); notifToggle.setAttribute('aria-checked', String(nOn)); };
+  paintNotif();
+  notifToggle.addEventListener('click', e => { e.stopPropagation(); nOn = !nOn; localStorage.setItem('souls_notif', nOn ? 'on' : 'off'); paintNotif(); });
+}
+const THEME_KEY = 'souls_theme';
+const themeRow = document.getElementById('themeRow');
+function applyTheme(t){
+  if (t && t !== 'purple') document.documentElement.setAttribute('data-theme', t);
+  else document.documentElement.removeAttribute('data-theme');
+  if (themeRow) themeRow.querySelectorAll('.sw').forEach(b => b.classList.toggle('active', b.getAttribute('data-theme') === (t || 'purple')));
+}
+applyTheme(localStorage.getItem(THEME_KEY) || 'purple');
+if (themeRow) themeRow.querySelectorAll('.sw').forEach(b => b.addEventListener('click', e => {
+  e.stopPropagation();
+  const t = b.getAttribute('data-theme');
+  localStorage.setItem(THEME_KEY, t);
+  applyTheme(t);
+}));
+</script>
+<script>
+/* ===== Miras da loja: dados + carteira de pontos ===== */
+window.SOULS_SKINS = [
+  { id:'classic', price:0, html:'' },
+  { id:'swords', price:1000, html:'<b class="emo">⚔️</b>' },
+  { id:'runic', price:5000, html:'<i class="rring"></i><i class="rspin"><i class="rune">ᚠ</i><i class="rune">ᚢ</i><i class="rune">ᚦ</i><i class="rune">ᚨ</i><i class="rune">ᚱ</i><i class="rune">ᚲ</i></i><i class="rdot"></i>' },
+  { id:'slash', price:10000, html:'<i class="slarc"></i><i class="slbl"></i>' },
+  { id:'blades', price:20000, html:'<i class="bgrp"><i class="bld"></i><i class="bld"></i><i class="bld"></i><i class="bld"></i></i><i class="cdot"></i>' },
+  { id:'energy', price:35000, html:'<i class="orbit"><i class="orb"></i><i class="orb"></i><i class="orb"></i></i><i class="core"></i>' },
+  { id:'daggers', price:55000, html:'<i class="dspin"><b class="emo d">🗡️</b><b class="emo d">🗡️</b><b class="emo d">🗡️</b><b class="emo d">🗡️</b></i>' },
+  { id:'katana', price:80000, html:'<b class="emo kat">🗡️</b><i class="kspark"></i>' },
+  { id:'axe', price:110000, html:'<b class="emo axe">🪓</b>' },
+  { id:'scythe', price:150000, html:'<b class="emo scy">🌙</b><i class="scdot"></i>' },
+  { id:'divine', price:250000, html:'<i class="dvring"></i><i class="dvspin"><i class="dvbl"></i><i class="dvbl"></i><i class="dvbl"></i><i class="dvbl"></i></i><b class="emo dvc">✦</b>' }
+];
+window.SOULS_SKIN = {};
+window.SOULS_SKINS.forEach(s => window.SOULS_SKIN[s.id] = s);
+window.SoulsWallet = (function(){
+  const CK='souls_coins', OK='souls_skins', EK='souls_skin';
+  let coins = parseInt(localStorage.getItem(CK)||'0',10)||0;
+  let owned; try{ owned = JSON.parse(localStorage.getItem(OK)||'["classic"]'); }catch(e){ owned=['classic']; }
+  if(!Array.isArray(owned)) owned=['classic'];
+  if(!owned.includes('classic')) owned.unshift('classic');
+  let equipped = localStorage.getItem(EK)||'classic';
+  if(!window.SOULS_SKIN[equipped]) equipped='classic';
+  const save=()=>{ try{ localStorage.setItem(CK,String(coins)); localStorage.setItem(OK,JSON.stringify(owned)); localStorage.setItem(EK,equipped); }catch(e){} };
+  return {
+    coins:()=>coins,
+    owned:()=>owned.slice(),
+    equipped:()=>equipped,
+    has:id=>owned.includes(id),
+    add(n){ coins+=Math.max(0,Math.round(n||0)); save(); },
+    buy(id){ const s=window.SOULS_SKIN[id]; if(!s||owned.includes(id)||coins<s.price) return false; coins-=s.price; owned.push(id); save(); return true; },
+    equip(id){ if(!owned.includes(id)) return false; equipped=id; save(); window.dispatchEvent(new CustomEvent('souls-skin',{detail:id})); return true; },
+    unlockAll(){ (window.SOULS_SKINS||[]).forEach(s=>{ if(!owned.includes(s.id)) owned.push(s.id); }); save(); },
+    penalize(n){ coins=Math.max(0,coins-Math.max(0,Math.round(n||0))); save(); return coins; },
+    unlockAll(){ (window.SOULS_SKINS||[]).forEach(s=>{ if(!owned.includes(s.id)) owned.push(s.id); }); coins+=5000000; save(); return true; }
+  };
+})();
+</script>
+<script>
+(() => {
+  const arena = document.getElementById('arena');
+  const scoreEl = document.getElementById('score');
+  const hitsEl = document.getElementById('hits');
+  const accuracyEl = document.getElementById('accuracy');
+  const timeEl = document.getElementById('time');
+  const overlay = document.getElementById('overlay');
+  const difficulty = document.getElementById('difficulty');
+  let score = 0, hits = 0, shots = 0, seconds = 60, running = false, target = null, timer = null, spawnTimer = null;
+  const settings = {
+    veryeasy:{size:84, life:2000, pts:15, bonus:50},
+    easy:{size:66, life:1400, pts:25, bonus:100},
+    normal:{size:52, life:1050, pts:40, bonus:200},
+    hard:{size:40, life:800, pts:60, bonus:350},
+    insane:{size:30, life:600, pts:100, bonus:600}
+  };
+  const stopBtn = document.getElementById('stop');
+  const durationSel = document.getElementById('duration');
+  const customMin = document.getElementById('customMin');
+  const customSec = document.getElementById('customSec');
+  const customTime = document.getElementById('customTime');
+  const getDuration = () => {
+    if (durationSel.value === 'custom') {
+      const t = (parseInt(customMin.value, 10) || 0) * 60 + (parseInt(customSec.value, 10) || 0);
+      return Math.max(5, Math.min(1800, t));
+    }
+    return parseInt(durationSel.value, 10) || 60;
+  };
+  function normalizeCustom() {
+    const t = getDuration();
+    customMin.value = Math.floor(t / 60);
+    customSec.value = t % 60;
+  }
+  const fmt = t => Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
+
+  function updateStats() {
+    scoreEl.textContent = score;
+    hitsEl.textContent = hits;
+    accuracyEl.textContent = (shots ? Math.round(hits / shots * 100) : 0) + '%';
+    timeEl.textContent = fmt(seconds);
+    stopBtn.disabled = !running;
+    durationSel.disabled = running;
+    customMin.disabled = running; customSec.disabled = running;
+    typeModeSel.disabled = running;
+    arena.classList.toggle('playing', running);
+    if (window.Music) Music.duck(running);
+  }
+  function removeTarget() {
+    if (target) target.remove();
+    target = null;
+  }
+  const LETTERS = 'qwertyuiopasdfghjklçzxcvbnm'.split('');
+  let mode = 'click', tmode = 'keys', currentKey = null, lastKey = null, info = null, typed = '';
+  const typeModeSel = document.getElementById('typeMode');
+  const wordInput = document.getElementById('wordInput');
+  const WORDS = 'sol mar luz rei paz dia boa voz sim uva ovo rio casa gato bola fogo vida alma lobo mesa amor azul rosa jogo tiro mira foco raio onda fera vale tempo noite forte mundo vento sorte ponto chave fruta folha terra areia nuvem souls flecha guerra cavalo trovao morgan caminho vitoria destino campeao reflexo digitar treinar planeta coragem aventura trabalho floresta montanha persistir caminhar guerreiro renascido liberdade esperanca velocidade tempestade invencivel concentrar'.split(' ');
+  const RANGES = { veryeasy:[3,4], easy:[3,5], normal:[4,6], hard:[5,8], insane:[6,10] };
+  function pickWord() {
+    const [a, b] = RANGES[difficulty.value] || [4, 6];
+    const pool = WORDS.filter(w => w.length >= a && w.length <= b && w !== lastKey);
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  function renderWord(n) {
+    if (target) target.innerHTML = '<span class="done">' + currentKey.slice(0, n) + '</span>' + currentKey.slice(n);
+  }
+  function flashWrong() {
+    if (!target) return;
+    const t = target;
+    t.classList.add('wrong');
+    setTimeout(() => t.classList.remove('wrong'), 230);
+  }
+  function applyTypeMode() {
+    document.body.classList.toggle('tm-words', tmode === 'words');
+    document.body.classList.toggle('tm-keys', tmode === 'keys');
+  }
+  const sfx = n => { if (window.SFX) SFX.play(n); };
+  function registerHit(s, x, y, pts) {
+    const p = pts || s.pts;
+    shots++; hits++; score += p;
+    sfx(mode === 'type' ? (tmode === 'words' ? 'word' : 'key') : 'hit');
+    const label = document.createElement('div');
+    label.className = 'hit'; label.textContent = '+' + p;
+    label.style.left = x + 'px'; label.style.top = y + 'px'; arena.appendChild(label);
+    setTimeout(() => label.remove(), 500);
+    updateStats(); removeTarget(); spawnTarget();
+  }
+  function spawnTarget() {
+    if (!running) return;
+    removeTarget();
+    const s = settings[difficulty.value];
+    const r = arena.getBoundingClientRect();
+    const isWord = mode === 'type' && tmode === 'words';
+    const word = isWord ? pickWord() : '';
+    const size = s.size * (device === 'mobile' ? 1.25 : 1);
+    const marginX = isWord ? word.length * 8 + 46 : size / 2 + 12;
+    const marginY = isWord ? 30 : size / 2 + 12;
+    const x = marginX + Math.random() * Math.max(1, r.width - marginX * 2);
+    const y = marginY + Math.random() * Math.max(1, r.height - marginY * 2);
+    info = { s, x, y, pts: s.pts };
+    target = document.createElement('button');
+    target.className = 'target';
+    target.setAttribute('aria-label','Alvo');
+    target.style.width = size + 'px';
+    target.style.height = size + 'px';
+    target.style.left = x + 'px';
+    target.style.top = y + 'px';
+    target.style.padding = '0';
+    if (isWord) {
+      currentKey = word; lastKey = word; typed = '';
+      target.classList.add('key', 'word');
+      target.style.width = 'auto'; target.style.height = 'auto';
+      target.style.fontSize = (device === 'mobile' ? 22 : 20) + 'px';
+      target.tabIndex = -1;
+      info.pts = Math.max(s.pts, Math.round(s.pts * word.length / 4));
+      wordInput.value = '';
+    } else if (mode === 'type') {
+      do { currentKey = LETTERS[Math.floor(Math.random() * LETTERS.length)]; } while (currentKey === lastKey);
+      lastKey = currentKey;
+      target.classList.add('key');
+      target.textContent = currentKey.toUpperCase();
+      target.style.fontSize = Math.round(size * 0.5) + 'px';
+      target.tabIndex = -1;
+    }
+    target.addEventListener('click', e => {
+      e.stopPropagation();
+      if (!running || !target || mode !== 'click') return;
+      registerHit(s, x, y);
+    });
+    arena.appendChild(target);
+    if (isWord) renderWord(0);
+    clearTimeout(spawnTimer);
+    const life = isWord ? s.life + word.length * 450 * (s.life / 1050) : mode === 'type' ? s.life * 1.4 : s.life;
+    spawnTimer = setTimeout(() => { if (running) { shots++; updateStats(); sfx('lost'); spawnTarget(); } }, life);
+  }
+  function handleKey(k) {
+    if (!running || mode !== 'type' || tmode !== 'keys' || !target || !info) return;
+    if (k === currentKey) registerHit(info.s, info.x, info.y);
+    else { shots++; updateStats(); flashWrong(); sfx('wrong'); }
+  }
+  document.addEventListener('keydown', e => {
+    if (!running || mode !== 'type' || tmode !== 'keys' || e.ctrlKey || e.metaKey || e.altKey) return;
+    const k = (e.key || '').toLowerCase();
+    if (LETTERS.includes(k)) { e.preventDefault(); if (!e.repeat) handleKey(k); }
+  });
+  // modo palavras: digitar no campo
+  wordInput.addEventListener('input', () => {
+    if (!running || mode !== 'type' || tmode !== 'words' || !target) { wordInput.value = ''; return; }
+    const v = wordInput.value.toLowerCase().replace(/[^a-zç]/g, '');
+    if (v === currentKey) { wordInput.value = ''; typed = ''; registerHit(info.s, info.x, info.y, info.pts); return; }
+    if (currentKey.startsWith(v)) { if (v.length > typed.length) sfx('tick'); typed = v; renderWord(v.length); wordInput.value = v; }
+    else { shots++; updateStats(); flashWrong(); sfx('wrong'); wordInput.value = typed; }
+  });
+  document.addEventListener('keydown', e => {
+    if (running && mode === 'type' && tmode === 'words' && document.activeElement !== wordInput && !e.ctrlKey && !e.metaKey && !e.altKey && e.key && e.key.length === 1) wordInput.focus();
+  });
+  typeModeSel.addEventListener('change', () => {
+    if (running) return;
+    tmode = typeModeSel.value; applyTypeMode(); showIntro();
+  });
+  // teclado na tela (celular)
+  const kbd = document.getElementById('kbd');
+  ['qwertyuiop', 'asdfghjklç', 'zxcvbnm'].forEach(row => {
+    const d = document.createElement('div'); d.className = 'row';
+    row.split('').forEach(ch => {
+      const b = document.createElement('button');
+      b.textContent = ch; b.tabIndex = -1;
+      b.addEventListener('click', () => handleKey(ch));
+      d.appendChild(b);
+    });
+    kbd.appendChild(d);
+  });
+  function introHtml() {
+    const T = window.I18N ? window.I18N.t : (k=>k);
+    const how = mode === 'type'
+      ? (tmode === 'words' ? T('intro_words') : device === 'mobile' ? T('intro_mkeys') : T('intro_dkeys'))
+      : T('intro_click');
+    return '<div class="panel"><h2>' + T('intro_head') + '</h2><p>' + how + ' ' + T('intro_tail') + '</p><button id="overlayStart">' + T('intro_btn') + '</button></div>';
+  }
+  function showIntro() {
+    overlay.classList.remove('hidden');
+    overlay.innerHTML = introHtml();
+    document.getElementById('overlayStart').addEventListener('click', start);
+  }
+  const pageTitle = document.getElementById('pageTitle');
+  function setMode(m) {
+    mode = m;
+    clearInterval(timer); clearTimeout(spawnTimer); removeTarget();
+    running = false; score = hits = shots = 0; seconds = getDuration();
+    document.body.classList.toggle('play-type', m === 'type');
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === m));
+    const name = m === 'type' ? (window.I18N ? window.I18N.t('title_typing') : 'Treino de Digitação') : (window.I18N ? window.I18N.t('title_reflex') : 'Treino de Reflexos');
+    pageTitle.textContent = name;
+    document.title = 'SOULS — ' + name;
+    updateStats(); showIntro();
+  }
+  document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => { if (t.dataset.mode !== mode) setMode(t.dataset.mode); }));
+  function finish() {
+    sfx('end');
+    running = false; clearInterval(timer); clearTimeout(spawnTimer); removeTarget(); stopBtn.disabled = true; durationSel.disabled = false; arena.classList.remove('playing'); wordInput.blur(); wordInput.value = '';
+    overlay.classList.remove('hidden');
+    const T = window.I18N ? window.I18N.t : (k=>k);
+    const unit = mode === 'type' ? (tmode === 'words' ? T('unit_words') : T('unit_keys')) : T('unit_targets');
+    const acc = shots ? Math.round(hits/shots*100) : 0;
+    let bonusMsg = '';
+    if (hits > 0 && hits === shots) {
+      const sd = settings[difficulty.value];
+      const dur = getDuration();
+      const bonus = Math.round(sd.bonus * dur / 60);
+      score += bonus;
+      bonusMsg = '<br><span class="finbonus">' + T('fin_bonus').replace('{bonus}', bonus) + '</span>';
+    }
+    const body = T('finTpl').replace('{score}', score).replace('{pts}', T('pts')).replace('{hits}', hits).replace('{unit}', unit).replace('{acc}', acc) + bonusMsg;
+    overlay.innerHTML = '<div class="panel"><h2>' + T('fin_head') + '</h2><p>' + body + '</p><button id="again">' + T('fin_btn') + '</button></div>';
+    if (window.SoulsWallet) window.SoulsWallet.add(score);
+    if (window.I18N && window.I18N.onFinish) window.I18N.onFinish(score);
+    document.getElementById('again').addEventListener('click', start);
+  }
+  function start() {
+    clearInterval(timer); clearTimeout(spawnTimer); removeTarget();
+    score = 0; hits = 0; shots = 0; seconds = getDuration(); running = true;
+    if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    typed = ''; wordInput.value = '';
+    sfx('start');
+    updateStats(); overlay.classList.add('hidden'); spawnTarget();
+    if (mode === 'type' && tmode === 'words') wordInput.focus({ preventScroll: true });
+    timer = setInterval(() => { seconds--; updateStats(); if (seconds <= 0) finish(); }, 1000);
+  }
+  arena.addEventListener('click', e => {
+    if (running && mode === 'click' && e.target === arena) { shots++; updateStats(); sfx('wrong'); }
+  });
+  durationSel.addEventListener('change', () => {
+    customTime.classList.toggle('show', durationSel.value === 'custom');
+    if (!running) { seconds = getDuration(); updateStats(); }
+  });
+  [customMin, customSec].forEach(inp => {
+    inp.addEventListener('input', () => { if (!running) { seconds = getDuration(); updateStats(); } });
+    inp.addEventListener('change', () => { normalizeCustom(); if (!running) { seconds = getDuration(); updateStats(); } });
+  });
+  stopBtn.addEventListener('click', () => { if (running) finish(); });
+  document.getElementById('start').addEventListener('click', start);
+  document.getElementById('overlayStart').addEventListener('click', start);
+  document.getElementById('reset').addEventListener('click', () => setMode(mode));
+  // escolha de dispositivo (celular ou desktop)
+  const deviceScreen = document.getElementById('deviceScreen');
+  let device = null;
+  function applyDevice(d) {
+    device = d;
+    document.body.classList.remove('mode-mobile', 'mode-desktop');
+    document.body.classList.add('mode-' + d);
+    deviceScreen.classList.add('hidden');
+    tmode = d === 'mobile' ? 'words' : 'keys'; typeModeSel.value = tmode; applyTypeMode();
+    if (window.Music) Music.autoStart();
+    if (!running && overlay.querySelector('#overlayStart')) showIntro();
+  }
+  {
+    const hasMouse = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    const sug = deviceScreen.querySelector('[data-device="' + (hasMouse ? 'desktop' : 'mobile') + '"]');
+    if (sug) sug.classList.add('suggested');
+  }
+  deviceScreen.querySelectorAll('.device-btn').forEach(b => b.addEventListener('click', () => {
+    applyDevice(b.dataset.device);
+  }));
+  document.getElementById('changeDevice').addEventListener('click', () => {
+    if (running) finish();
+    deviceScreen.classList.remove('hidden');
+  });
+  // mira que segue o mouse (só em dispositivos com mouse)
+  const cross = document.createElement('div');
+  cross.className = 'crosshair';
+  arena.appendChild(cross);
+  // aplicar a mira escolhida na loja
+  let curSkin = 'classic';
+  function applyCrossSkin(id){
+    const m = window.SOULS_SKIN || {};
+    if(!m[id]) id = 'classic';
+    cross.classList.remove('ch-' + curSkin);
+    curSkin = id;
+    cross.classList.add('ch-' + curSkin);
+    cross.innerHTML = m[id] ? m[id].html : '';
+  }
+  applyCrossSkin(window.SoulsWallet ? window.SoulsWallet.equipped() : 'classic');
+  window.addEventListener('souls-skin', e => applyCrossSkin(e.detail));
+  arena.addEventListener('mousemove', e => {
+    const r = arena.getBoundingClientRect();
+    cross.style.left = (e.clientX - r.left) + 'px';
+    cross.style.top = (e.clientY - r.top) + 'px';
+    cross.classList.add('on');
+  });
+  arena.addEventListener('mouseleave', () => cross.classList.remove('on'));
+  arena.addEventListener('mousedown', () => { cross.classList.add('fire'); setTimeout(() => cross.classList.remove('fire'), 110); });
+  // lembrar as configurações neste aparelho
+  const SAVE_KEY = 'souls_settings';
+  const musicVolEl = document.getElementById('musicVol'), sfxVolEl = document.getElementById('sfxVol');
+  const clamp100 = v => Math.max(0, Math.min(100, parseInt(v, 10) || 0));
+  function saveSettings() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        music: musicVolEl.value, sfx: sfxVolEl.value,
+        difficulty: difficulty.value, duration: durationSel.value,
+        cMin: customMin.value, cSec: customSec.value
+      }));
+    } catch (e) {}
+  }
+  try {
+    const sv = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+    if (sv) {
+      if (sv.difficulty in settings) difficulty.value = sv.difficulty;
+      if ([...durationSel.options].some(o => o.value === sv.duration)) durationSel.value = sv.duration;
+      if (sv.cMin != null) customMin.value = sv.cMin;
+      if (sv.cSec != null) customSec.value = sv.cSec;
+      customTime.classList.toggle('show', durationSel.value === 'custom');
+      normalizeCustom();
+      seconds = getDuration();
+      if (sv.music != null) {
+        const m = clamp100(sv.music);
+        musicVolEl.value = m; document.getElementById('musicVal').textContent = m;
+        if (window.Music) Music.setVolume(m / 100);
+      }
+      if (sv.sfx != null) {
+        const f = clamp100(sv.sfx);
+        sfxVolEl.value = f; document.getElementById('sfxVal').textContent = f;
+        if (window.SFX) SFX.setVolume(f / 100);
+      }
+    }
+  } catch (e) {}
+  [difficulty, durationSel, customMin, customSec, musicVolEl, sfxVolEl].forEach(el => {
+    el.addEventListener('input', saveSettings);
+    el.addEventListener('change', saveSettings);
+  });
+  // brasas douradas subindo ao fundo
+  for (let i = 0; i < 16; i++) {
+    const e = document.createElement('span');
+    e.className = 'ember';
+    e.style.left = (Math.random() * 100) + '%';
+    e.style.animationDuration = (5 + Math.random() * 6) + 's';
+    e.style.animationDelay = (-Math.random() * 10) + 's';
+    e.style.setProperty('--dx', (Math.random() * 80 - 40) + 'px');
+    arena.appendChild(e);
+  }
+  updateStats();
+  window.__soulsRefresh = () => { if (!running) setMode(mode); };
+})();
+</script>
+<script>
+const DICT = {};
+DICT.ptbr = {
+  nav_trainings:"Treinos", nav_reflex:"Reflexos", nav_typing:"Digita\u00e7\u00e3o", nav_game:"Jogo",
+  nav_ranking:"Pontua\u00e7\u00e3o", nav_name:"Meu nome", nav_restart:"Reiniciar", nav_device:"Trocar dispositivo",
+  nav_system:"Sistema", nav_lang:"Idioma", nav_settings:"Configura\u00e7\u00f5es", profile_sub:"O RENASCIDO",
+  hello:"Bem-vindo de volta", subtitle:"Divirta-se treinando, fiz com carinho.",
+  st_points:"\ud83c\udfc6 Pontos", st_hits:"\ud83c\udfaf Acertos", st_acc:"\ud83d\udcc8 Precis\u00e3o", st_time:"\u23f1\ufe0f Tempo",
+  lbl_diff:"Dificuldade", diff_veryeasy:"Muito f\u00e1cil", diff_easy:"F\u00e1cil", diff_normal:"Normal", diff_hard:"Dif\u00edcil", diff_insane:"Insano",
+  lbl_time:"Tempo", dur_50:"50 seg", dur_60:"1 min", dur_70:"1 min 10 seg", dur_180:"3 min", dur_300:"5 min", dur_custom:"Personalizado",
+  ct_min:"min", ct_sec:"seg", ct_hint:"(5 seg a 30 min)", lbl_mode:"Modo", mode_keys:"\ud83d\udcbb Desktop (teclas)", mode_words:"\ud83d\udcf1 Celular (palavras)",
+  btn_start:"Come\u00e7ar treino", btn_stop:"Parar treino", nowtag:"AGORA JOGANDO",
+  intro_head:"Pronto para treinar?", intro_click:"Clique ou toque nos alvos assim que aparecerem.",
+  intro_words:"Digite no campo abaixo a palavra que aparecer no alvo.", intro_mkeys:"Toque no teclado da tela a tecla que aparecer no alvo.",
+  intro_dkeys:"Aperte no teclado a tecla que aparecer no alvo.", intro_tail:"Escolha a dificuldade e o tempo, e fa\u00e7a o m\u00e1ximo de pontos.", intro_btn:"Come\u00e7ar",
+  title_reflex:"Treino de Reflexos", title_typing:"Treino de Digita\u00e7\u00e3o",
+  fin_head:"Treino finalizado!", finTpl:"Voc\u00ea fez <b>{score} {pts}</b>, acertou <b>{hits} {unit}</b> e teve <b>{acc}% de precis\u00e3o</b>.",
+  fin_bonus:"\ud83d\udd25 Perfeito! Sem errar nenhuma: +{bonus} pontos de b\u00f4nus!",
+  fin_btn:"Treinar novamente", pts:"pontos", unit_targets:"alvos", unit_keys:"teclas", unit_words:"palavras",
+  footer_sign:"Souls, o renascido", verse:"\u201cN\u00e3o fui eu que lhe ordenei? Seja forte e corajoso! N\u00e3o te apavores nem desanimes, pois o Senhor, o teu Deus, estar\u00e1 contigo por onde quer que andares.\u201d", verse_ref:"Josu\u00e9 1:9",
+  dev_q:"Como voc\u00ea vai jogar?", dev_sub:"Escolha seu dispositivo para ajustar o jogo.", dev_mobile:"Celular", dev_mobile_sub:"Toque na tela, alvos maiores", dev_desktop:"Desktop", dev_desktop_sub:"PC ou notebook, com mira no mouse", dev_sug:"Sugerido",
+  set_title:"CONFIGURA\u00c7\u00d5ES", set_music:"\ud83c\udfb5 M\u00fasica", set_sfx:"\ud83d\udd14 Efeitos sonoros", set_sound:"\ud83d\udd0a Som", set_notif:"\ud83d\udd14 Notifica\u00e7\u00e3o", set_language:"\ud83c\udf10 Idioma", set_colors:"\ud83c\udfa8 Modos de cores", set_reset:"\ud83d\uddd1\ufe0f Resetar progresso", reset_title:"Resetar progresso", reset_cancel:"Cancelar", reset_warn:"\u26a0\ufe0f Aten\u00e7\u00e3o! Voc\u00ea vai perder TODAS as miras, TODAS as pontua\u00e7\u00f5es, seu nome e todo o progresso. Isso n\u00e3o tem volta.", reset_no:"Cancelar", reset_yes:"Apagar tudo", set_hint:"De 0 a 100. No 0 o som fica desligado.",
+  rank_title:"Ranking", rank_close:"Voltar", rank_sub:"Os melhores do treino", rank_you:"VOC\u00ca", boss_tag:"O BOSS",
+  name_title:"Escolha seu nome", name_sub:"Esse nome vai aparecer no seu ranking.", name_ph:"Digite seu nome", name_confirm:"Confirmar", lang_title:"Escolha o idioma", next_verse:"Pr\u00f3ximo vers\u00edculo",
+  nav_shop:"Loja", shop_title:"Loja de Miras", shop_sub:"Compre miras novas com os pontos que voc\u00ea ganha jogando.", shop_balance:"Seus pontos:",
+  shop_buy:"Comprar", shop_equip:"Equipar", shop_equipped:"Equipada", shop_locked:"Pontos insuficientes",
+  sk_classic:"Mira Cl\u00e1ssica", skd_classic:"A mira padr\u00e3o do treino, simples e precisa. J\u00e1 vem com voc\u00ea.",
+  sk_swords:"Espadas Cruzadas", skd_swords:"Duas espadas que se cruzam no centro, girando suavemente e soltando um brilho de energia nos ataques.",
+  sk_runic:"Mira R\u00fanica", skd_runic:"Um c\u00edrculo m\u00e1gico cercado por runas brilhantes que giram sem parar e brilham mais no combate.",
+  sk_slash:"Corte de Espada", skd_slash:"Uma mira din\u00e2mica que imita o movimento de uma l\u00e2mina, criando rastros de energia a cada golpe.",
+  sk_blades:"Mira de L\u00e2minas", skd_blades:"Quatro l\u00e2minas ao redor do centro que se abrem e fecham conforme suas a\u00e7\u00f5es.",
+  sk_energy:"Mira de Energia", skd_energy:"Fragmentos de energia que orbitam o centro e reagem aos ataques com efeitos luminosos.",
+  sk_daggers:"Mira de Adagas", skd_daggers:"Pequenas adagas em c\u00edrculo que giram ao redor do centro, acelerando nas sequ\u00eancias de ataque.",
+  sk_katana:"Mira de Katana", skd_katana:"Tra\u00e7os finos e elegantes que simulam cortes r\u00e1pidos, com part\u00edculas e rastros de energia.",
+  sk_axe:"Mira de Machado", skd_axe:"L\u00e2minas robustas que se movem com impacto, uma anima\u00e7\u00e3o pesada pra armas de for\u00e7a.",
+  sk_scythe:"Mira de Foice", skd_scythe:"Movimentos circulares com efeitos de energia sombria que acompanham os golpes.",
+  sk_divine:"Mira Divina", skd_divine:"L\u00e2minas flutuantes e s\u00edmbolos luminosos que giram em harmonia, com um ar poderoso e sobrenatural.",
+  owner_title:"\u00c1rea do Dono", owner_warn:"Somente para o dono. N\u00e3o tente, ou voc\u00ea perder\u00e1 pontos.", owner_ph:"Digite o c\u00f3digo secreto", owner_confirm:"Confirmar", owner_ok:"\u2705 C\u00f3digo correto! Todas as miras foram liberadas.", owner_bad:"\u274c C\u00f3digo errado! Voc\u00ea perdeu 1000 pontos. Restam: {left}"
+};
+DICT.ptpt = Object.assign({}, DICT.ptbr, {
+  nav_settings:"Defini\u00e7\u00f5es",
+  subtitle:"Diverte-te a treinar, fiz com carinho.",
+  intro_words:"Escreve no campo abaixo a palavra que aparecer no alvo.",
+  intro_mkeys:"Toca no teclado do ecr\u00e3 a tecla que aparecer no alvo.",
+  intro_dkeys:"Prime no teclado a tecla que aparecer no alvo.",
+  intro_tail:"Escolhe a dificuldade e o tempo, e faz o m\u00e1ximo de pontos.",
+  finTpl:"Fizeste <b>{score} {pts}</b>, acertaste <b>{hits} {unit}</b> e tiveste <b>{acc}% de precis\u00e3o</b>.",
+  fin_bonus:"\ud83d\udd25 Perfeito! Sem errar nenhuma: +{bonus} pontos de b\u00f3nus!",
+  verse:"\u201cN\u00e3o fui eu que te dei esta ordem? S\u00ea forte e corajoso! N\u00e3o temas nem te assustes, porque o Senhor, teu Deus, estar\u00e1 contigo por onde quer que fores.\u201d",
+  dev_q:"Como vais jogar?", dev_sub:"Escolhe o teu dispositivo para ajustar o jogo.", dev_desktop_sub:"PC ou port\u00e1til, com mira no rato",
+  name_sub:"Este nome vai aparecer no teu ranking.", name_ph:"Escreve o teu nome"
+});
+DICT.en = {
+  nav_trainings:"Trainings", nav_reflex:"Reflexes", nav_typing:"Typing", nav_game:"Game",
+  nav_ranking:"Ranking", nav_name:"My name", nav_restart:"Restart", nav_device:"Switch device",
+  nav_system:"System", nav_lang:"Language", nav_settings:"Settings", profile_sub:"THE REBORN",
+  hello:"Welcome back", subtitle:"Have fun training, made with care.",
+  st_points:"\ud83c\udfc6 Points", st_hits:"\ud83c\udfaf Hits", st_acc:"\ud83d\udcc8 Accuracy", st_time:"\u23f1\ufe0f Time",
+  lbl_diff:"Difficulty", diff_veryeasy:"Very easy", diff_easy:"Easy", diff_normal:"Normal", diff_hard:"Hard", diff_insane:"Insane",
+  lbl_time:"Time", dur_50:"50 sec", dur_60:"1 min", dur_70:"1 min 10 sec", dur_180:"3 min", dur_300:"5 min", dur_custom:"Custom",
+  ct_min:"min", ct_sec:"sec", ct_hint:"(5 sec to 30 min)", lbl_mode:"Mode", mode_keys:"\ud83d\udcbb Desktop (keys)", mode_words:"\ud83d\udcf1 Mobile (words)",
+  btn_start:"Start training", btn_stop:"Stop training", nowtag:"NOW PLAYING",
+  intro_head:"Ready to train?", intro_click:"Click or tap the targets as soon as they appear.",
+  intro_words:"Type in the field below the word shown on the target.", intro_mkeys:"Tap on the on-screen keyboard the key shown on the target.",
+  intro_dkeys:"Press on the keyboard the key shown on the target.", intro_tail:"Choose the difficulty and time, and score as much as you can.", intro_btn:"Start",
+  title_reflex:"Reflex Training", title_typing:"Typing Training",
+  fin_head:"Training finished!", finTpl:"You scored <b>{score} {pts}</b>, hit <b>{hits} {unit}</b> with <b>{acc}% accuracy</b>.",
+  fin_bonus:"\ud83d\udd25 Perfect! No misses: +{bonus} bonus points!",
+  fin_btn:"Train again", pts:"points", unit_targets:"targets", unit_keys:"keys", unit_words:"words",
+  footer_sign:"Souls, the reborn", verse:"\u201cHave I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.\u201d", verse_ref:"Joshua 1:9",
+  dev_q:"How will you play?", dev_sub:"Choose your device to adjust the game.", dev_mobile:"Mobile", dev_mobile_sub:"Tap the screen, bigger targets", dev_desktop:"Desktop", dev_desktop_sub:"PC or laptop, with mouse aim", dev_sug:"Suggested",
+  set_title:"SETTINGS", set_music:"\ud83c\udfb5 Music", set_sfx:"\ud83d\udd14 Sound effects", set_sound:"\ud83d\udd0a Sound", set_notif:"\ud83d\udd14 Notification", set_language:"\ud83c\udf10 Language", set_colors:"\ud83c\udfa8 Color modes", set_reset:"\ud83d\uddd1\ufe0f Reset progress", reset_title:"Reset progress", reset_cancel:"Cancel", reset_warn:"\u26a0\ufe0f Warning! You will lose ALL crosshairs, ALL scores, your name and all progress. This cannot be undone.", reset_no:"Cancel", reset_yes:"Erase everything", set_hint:"From 0 to 100. At 0 the sound is off.",
+  rank_title:"Ranking", rank_close:"Back", rank_sub:"The best of the training", rank_you:"YOU", boss_tag:"THE BOSS",
+  name_title:"Choose your name", name_sub:"This name will appear in your ranking.", name_ph:"Type your name", name_confirm:"Confirm", lang_title:"Choose the language", next_verse:"Next verse",
+  nav_shop:"Shop", shop_title:"Crosshair Shop", shop_sub:"Buy new crosshairs with the points you earn playing.", shop_balance:"Your points:",
+  shop_buy:"Buy", shop_equip:"Equip", shop_equipped:"Equipped", shop_locked:"Not enough points",
+  sk_classic:"Classic Crosshair", skd_classic:"The default training crosshair, simple and precise. You already have it.",
+  sk_swords:"Crossed Swords", skd_swords:"Two swords crossing at the center, spinning softly and releasing an energy glow on attacks.",
+  sk_runic:"Runic Crosshair", skd_runic:"A magic circle surrounded by glowing runes that spin nonstop and shine brighter in combat.",
+  sk_slash:"Sword Slash", skd_slash:"A dynamic crosshair mimicking a blade's movement, leaving energy trails with every strike.",
+  sk_blades:"Blades Crosshair", skd_blades:"Four blades around the center that open and close with your actions.",
+  sk_energy:"Energy Crosshair", skd_energy:"Energy fragments orbiting the center, reacting to attacks with luminous effects.",
+  sk_daggers:"Daggers Crosshair", skd_daggers:"Small daggers in a circle spinning around the center, speeding up during attack combos.",
+  sk_katana:"Katana Crosshair", skd_katana:"Thin, elegant strokes simulating quick cuts, with particles and energy trails.",
+  sk_axe:"Axe Crosshair", skd_axe:"Robust blades that move with impact, a heavy animation for powerful weapons.",
+  sk_scythe:"Scythe Crosshair", skd_scythe:"Circular movements with dark energy effects following each strike.",
+  sk_divine:"Divine Crosshair", skd_divine:"Floating blades and luminous symbols spinning in harmony, powerful and supernatural.",
+  owner_title:"Owner Area", owner_warn:"Owner only. Do not try, or you will lose points.", owner_ph:"Enter the secret code", owner_confirm:"Confirm", owner_ok:"\u2705 Correct code! All crosshairs unlocked.", owner_bad:"\u274c Wrong code! You lost 1000 points. Left: {left}"
+};
+DICT.es = {
+  nav_trainings:"Entrenamientos", nav_reflex:"Reflejos", nav_typing:"Escritura", nav_game:"Juego",
+  nav_ranking:"Clasificaci\u00f3n", nav_name:"Mi nombre", nav_restart:"Reiniciar", nav_device:"Cambiar dispositivo",
+  nav_system:"Sistema", nav_lang:"Idioma", nav_settings:"Ajustes", profile_sub:"EL RENACIDO",
+  hello:"Bienvenido de nuevo", subtitle:"Diviértete entrenando, hecho con cari\u00f1o.",
+  st_points:"\ud83c\udfc6 Puntos", st_hits:"\ud83c\udfaf Aciertos", st_acc:"\ud83d\udcc8 Precisi\u00f3n", st_time:"\u23f1\ufe0f Tiempo",
+  lbl_diff:"Dificultad", diff_veryeasy:"Muy f\u00e1cil", diff_easy:"F\u00e1cil", diff_normal:"Normal", diff_hard:"Dif\u00edcil", diff_insane:"Insano",
+  lbl_time:"Tiempo", dur_50:"50 seg", dur_60:"1 min", dur_70:"1 min 10 seg", dur_180:"3 min", dur_300:"5 min", dur_custom:"Personalizado",
+  ct_min:"min", ct_sec:"seg", ct_hint:"(5 seg a 30 min)", lbl_mode:"Modo", mode_keys:"\ud83d\udcbb Escritorio (teclas)", mode_words:"\ud83d\udcf1 M\u00f3vil (palabras)",
+  btn_start:"Empezar", btn_stop:"Parar", nowtag:"JUGANDO AHORA",
+  intro_head:"\u00bfListo para entrenar?", intro_click:"Haz clic o toca los blancos en cuanto aparezcan.",
+  intro_words:"Escribe en el campo de abajo la palabra que aparezca en el blanco.", intro_mkeys:"Toca en el teclado de la pantalla la tecla que aparezca en el blanco.",
+  intro_dkeys:"Pulsa en el teclado la tecla que aparezca en el blanco.", intro_tail:"Elige la dificultad y el tiempo, y haz la mayor puntuaci\u00f3n posible.", intro_btn:"Empezar",
+  title_reflex:"Entrenamiento de Reflejos", title_typing:"Entrenamiento de Escritura",
+  fin_head:"\u00a1Entrenamiento terminado!", finTpl:"Hiciste <b>{score} {pts}</b>, acertaste <b>{hits} {unit}</b> con <b>{acc}% de precisi\u00f3n</b>.",
+  fin_bonus:"\ud83d\udd25 \u00a1Perfecto! Sin fallar ninguno: +{bonus} puntos de bonus!",
+  fin_btn:"Entrenar otra vez", pts:"puntos", unit_targets:"blancos", unit_keys:"teclas", unit_words:"palabras",
+  footer_sign:"Souls, el renacido", verse:"\u201c\u00bfNo te lo he ordenado yo? \u00a1S\u00e9 fuerte y valiente! No temas ni desmayes, porque el Se\u00f1or tu Dios estar\u00e1 contigo dondequiera que vayas.\u201d", verse_ref:"Josu\u00e9 1:9",
+  dev_q:"\u00bfC\u00f3mo vas a jugar?", dev_sub:"Elige tu dispositivo para ajustar el juego.", dev_mobile:"M\u00f3vil", dev_mobile_sub:"Toca la pantalla, blancos m\u00e1s grandes", dev_desktop:"Escritorio", dev_desktop_sub:"PC o port\u00e1til, con punter\u00eda del rat\u00f3n", dev_sug:"Sugerido",
+  set_title:"AJUSTES", set_music:"\ud83c\udfb5 M\u00fasica", set_sfx:"\ud83d\udd14 Efectos de sonido", set_sound:"\ud83d\udd0a Sonido", set_notif:"\ud83d\udd14 Notificaci\u00f3n", set_language:"\ud83c\udf10 Idioma", set_colors:"\ud83c\udfa8 Modos de color", set_reset:"\ud83d\uddd1\ufe0f Reiniciar progreso", reset_title:"Reiniciar progreso", reset_cancel:"Cancelar", reset_warn:"\u26a0\ufe0f \u00a1Atenci\u00f3n! Vas a perder TODAS las miras, TODAS las puntuaciones, tu nombre y todo el progreso. Esto no se puede deshacer.", reset_no:"Cancelar", reset_yes:"Borrar todo", set_hint:"De 0 a 100. En 0 el sonido se apaga.",
+  rank_title:"Clasificaci\u00f3n", rank_close:"Volver", rank_sub:"Los mejores del entrenamiento", rank_you:"T\u00da", boss_tag:"EL JEFE",
+  name_title:"Elige tu nombre", name_sub:"Este nombre aparecer\u00e1 en tu clasificaci\u00f3n.", name_ph:"Escribe tu nombre", name_confirm:"Confirmar", lang_title:"Elige el idioma", next_verse:"Pr\u00f3ximo vers\u00edculo",
+  nav_shop:"Tienda", shop_title:"Tienda de Miras", shop_sub:"Compra miras nuevas con los puntos que ganas jugando.", shop_balance:"Tus puntos:",
+  shop_buy:"Comprar", shop_equip:"Equipar", shop_equipped:"Equipada", shop_locked:"Puntos insuficientes",
+  sk_classic:"Mira Cl\u00e1sica", skd_classic:"La mira est\u00e1ndar del entrenamiento, simple y precisa. Ya la tienes.",
+  sk_swords:"Espadas Cruzadas", skd_swords:"Dos espadas que se cruzan en el centro, girando suavemente y soltando un brillo de energ\u00eda en los ataques.",
+  sk_runic:"Mira R\u00fanica", skd_runic:"Un c\u00edrculo m\u00e1gico rodeado de runas brillantes que giran sin parar y brillan m\u00e1s en combate.",
+  sk_slash:"Corte de Espada", skd_slash:"Una mira din\u00e1mica que imita el movimiento de una hoja, dejando estelas de energ\u00eda en cada golpe.",
+  sk_blades:"Mira de Hojas", skd_blades:"Cuatro hojas alrededor del centro que se abren y cierran seg\u00fan tus acciones.",
+  sk_energy:"Mira de Energ\u00eda", skd_energy:"Fragmentos de energ\u00eda que orbitan el centro y reaccionan a los ataques con efectos luminosos.",
+  sk_daggers:"Mira de Dagas", skd_daggers:"Peque\u00f1as dagas en c\u00edrculo que giran alrededor del centro, acelerando en las secuencias de ataque.",
+  sk_katana:"Mira de Katana", skd_katana:"Trazos finos y elegantes que simulan cortes r\u00e1pidos, con part\u00edculas y estelas de energ\u00eda.",
+  sk_axe:"Mira de Hacha", skd_axe:"Hojas robustas que se mueven con impacto, una animaci\u00f3n pesada para armas de fuerza.",
+  sk_scythe:"Mira de Guada\u00f1a", skd_scythe:"Movimientos circulares con efectos de energ\u00eda oscura que siguen cada golpe.",
+  sk_divine:"Mira Divina", skd_divine:"Hojas flotantes y s\u00edmbolos luminosos que giran en armon\u00eda, poderosa y sobrenatural.",
+  owner_title:"\u00c1rea del Due\u00f1o", owner_warn:"Solo para el due\u00f1o. No lo intentes, o perder\u00e1s puntos.", owner_ph:"Escribe el c\u00f3digo secreto", owner_confirm:"Confirmar", owner_ok:"\u2705 \u00a1C\u00f3digo correcto! Todas las miras desbloqueadas.", owner_bad:"\u274c \u00a1C\u00f3digo incorrecto! Perdiste 1000 puntos. Quedan: {left}"
+};
+DICT.de = {
+  nav_trainings:"Trainings", nav_reflex:"Reflexe", nav_typing:"Tippen", nav_game:"Spiel",
+  nav_ranking:"Rangliste", nav_name:"Mein Name", nav_restart:"Neustart", nav_device:"Ger\u00e4t wechseln",
+  nav_system:"System", nav_lang:"Sprache", nav_settings:"Einstellungen", profile_sub:"DER WIEDERGEBORENE",
+  hello:"Willkommen zur\u00fcck", subtitle:"Viel Spa\u00df beim Training, mit Liebe gemacht.",
+  st_points:"\ud83c\udfc6 Punkte", st_hits:"\ud83c\udfaf Treffer", st_acc:"\ud83d\udcc8 Genauigkeit", st_time:"\u23f1\ufe0f Zeit",
+  lbl_diff:"Schwierigkeit", diff_veryeasy:"Sehr leicht", diff_easy:"Leicht", diff_normal:"Normal", diff_hard:"Schwer", diff_insane:"Wahnsinnig",
+  lbl_time:"Zeit", dur_50:"50 Sek", dur_60:"1 Min", dur_70:"1 Min 10 Sek", dur_180:"3 Min", dur_300:"5 Min", dur_custom:"Benutzerdefiniert",
+  ct_min:"Min", ct_sec:"Sek", ct_hint:"(5 Sek bis 30 Min)", lbl_mode:"Modus", mode_keys:"\ud83d\udcbb Desktop (Tasten)", mode_words:"\ud83d\udcf1 Handy (W\u00f6rter)",
+  btn_start:"Training starten", btn_stop:"Training stoppen", nowtag:"L\u00c4UFT GERADE",
+  intro_head:"Bereit zum Training?", intro_click:"Klicke oder tippe die Ziele an, sobald sie erscheinen.",
+  intro_words:"Tippe im Feld unten das Wort ein, das auf dem Ziel erscheint.", intro_mkeys:"Tippe auf der Bildschirmtastatur die Taste, die auf dem Ziel erscheint.",
+  intro_dkeys:"Dr\u00fccke auf der Tastatur die Taste, die auf dem Ziel erscheint.", intro_tail:"W\u00e4hle Schwierigkeit und Zeit und hole die h\u00f6chste Punktzahl.", intro_btn:"Start",
+  title_reflex:"Reflex-Training", title_typing:"Tipp-Training",
+  fin_head:"Training beendet!", finTpl:"Du hast <b>{score} {pts}</b> erzielt, <b>{hits} {unit}</b> getroffen mit <b>{acc}% Genauigkeit</b>.",
+  fin_bonus:"\ud83d\udd25 Perfekt! Kein Fehler: +{bonus} Bonuspunkte!",
+  fin_btn:"Nochmal trainieren", pts:"Punkte", unit_targets:"Ziele", unit_keys:"Tasten", unit_words:"W\u00f6rter",
+  footer_sign:"Souls, der Wiedergeborene", verse:"\u201cHabe ich dir nicht geboten: Sei stark und mutig? Lass dir nicht grauen und entsetze dich nicht; denn der Herr, dein Gott, ist mit dir in allem, was du tun wirst.\u201d", verse_ref:"Josua 1:9",
+  dev_q:"Wie wirst du spielen?", dev_sub:"W\u00e4hle dein Ger\u00e4t, um das Spiel anzupassen.", dev_mobile:"Handy", dev_mobile_sub:"Bildschirm antippen, gr\u00f6\u00dfere Ziele", dev_desktop:"Desktop", dev_desktop_sub:"PC oder Laptop, mit Mauszielen", dev_sug:"Empfohlen",
+  set_title:"EINSTELLUNGEN", set_music:"\ud83c\udfb5 Musik", set_sfx:"\ud83d\udd14 Soundeffekte", set_sound:"\ud83d\udd0a Ton", set_notif:"\ud83d\udd14 Benachrichtigung", set_language:"\ud83c\udf10 Sprache", set_colors:"\ud83c\udfa8 Farbmodi", set_reset:"\ud83d\uddd1\ufe0f Fortschritt zur\u00fccksetzen", reset_title:"Fortschritt zur\u00fccksetzen", reset_cancel:"Abbrechen", reset_warn:"\u26a0\ufe0f Achtung! Du verlierst ALLE Fadenkreuze, ALLE Punkte, deinen Namen und den gesamten Fortschritt. Das kann nicht r\u00fcckg\u00e4ngig gemacht werden.", reset_no:"Abbrechen", reset_yes:"Alles l\u00f6schen", set_hint:"Von 0 bis 100. Bei 0 ist der Ton aus.",
+  rank_title:"Rangliste", rank_close:"Zur\u00fcck", rank_sub:"Die Besten des Trainings", rank_you:"DU", boss_tag:"DER BOSS", boss2_tag:"ZWEITER BOSS",
+  name_title:"W\u00e4hle deinen Namen", name_sub:"Dieser Name erscheint in deiner Rangliste.", name_ph:"Gib deinen Namen ein", name_confirm:"Best\u00e4tigen", lang_title:"W\u00e4hle die Sprache", next_verse:"N\u00e4chster Vers",
+  nav_shop:"Shop", shop_title:"Fadenkreuz-Shop", shop_sub:"Kaufe neue Fadenkreuze mit den Punkten, die du im Spiel verdienst.", shop_balance:"Deine Punkte:",
+  shop_buy:"Kaufen", shop_equip:"Ausr\u00fcsten", shop_equipped:"Ausger\u00fcstet", shop_locked:"Nicht genug Punkte",
+  sk_classic:"Klassisches Fadenkreuz", skd_classic:"Das Standard-Fadenkreuz, einfach und pr\u00e4zise. Hast du bereits.",
+  sk_swords:"Gekreuzte Schwerter", skd_swords:"Zwei Schwerter, die sich in der Mitte kreuzen, sanft drehen und bei Angriffen Energie abgeben.",
+  sk_runic:"Runen-Fadenkreuz", skd_runic:"Ein magischer Kreis mit leuchtenden Runen, die sich st\u00e4ndig drehen und im Kampf heller leuchten.",
+  sk_slash:"Schwerthieb", skd_slash:"Ein dynamisches Fadenkreuz, das die Bewegung einer Klinge nachahmt und bei jedem Schlag Energiespuren hinterl\u00e4sst.",
+  sk_blades:"Klingen-Fadenkreuz", skd_blades:"Vier Klingen um die Mitte, die sich je nach deinen Aktionen \u00f6ffnen und schlie\u00dfen.",
+  sk_energy:"Energie-Fadenkreuz", skd_energy:"Energiefragmente, die um die Mitte kreisen und mit Lichteffekten auf Angriffe reagieren.",
+  sk_daggers:"Dolch-Fadenkreuz", skd_daggers:"Kleine Dolche im Kreis, die sich um die Mitte drehen und bei Angriffskombos schneller werden.",
+  sk_katana:"Katana-Fadenkreuz", skd_katana:"Feine, elegante Striche, die schnelle Schnitte simulieren, mit Partikeln und Energiespuren.",
+  sk_axe:"Axt-Fadenkreuz", skd_axe:"Robuste Klingen mit wuchtiger Bewegung, eine schwere Animation f\u00fcr starke Waffen.",
+  sk_scythe:"Sensen-Fadenkreuz", skd_scythe:"Kreisende Bewegungen mit dunklen Energieeffekten, die jedem Schlag folgen.",
+  sk_divine:"G\u00f6ttliches Fadenkreuz", skd_divine:"Schwebende Klingen und leuchtende Symbole, die sich harmonisch drehen, m\u00e4chtig und \u00fcbernat\u00fcrlich.",
+  owner_title:"Besitzer-Bereich", owner_warn:"Nur f\u00fcr den Besitzer. Versuche es nicht, sonst verlierst du Punkte.", owner_ph:"Geheimcode eingeben", owner_confirm:"Best\u00e4tigen", owner_ok:"\u2705 Code korrekt! Alle Fadenkreuze freigeschaltet.", owner_bad:"\u274c Falscher Code! Du hast 1000 Punkte verloren. \u00dcbrig: {left}"
+};
+(function(){
+  const LOCALES = { ptbr:'pt-BR', ptpt:'pt-PT', en:'en', es:'es', de:'de' };
+  let lang = localStorage.getItem('souls_lang') || 'ptbr';
+  if (!DICT[lang]) lang = 'ptbr';
+  let name = localStorage.getItem('souls_name') || 'Souls';
+  let best = parseInt(localStorage.getItem('souls_best') || '0', 10) || 0;
+
+  const VERSES = {};
+  VERSES.ptbr = [
+    ["N\u00e3o fui eu que lhe ordenei? Seja forte e corajoso! N\u00e3o se apavore nem desanime, pois o Senhor, o seu Deus, estar\u00e1 com voc\u00ea por onde quer que voc\u00ea andar.", "Josu\u00e9 1:9"],
+    ["Tudo posso naquele que me fortalece.", "Filipenses 4:13"],
+    ["Mas os que esperam no Senhor renovam as suas for\u00e7as. Voam bem alto como \u00e1guias; correm e n\u00e3o se cansam, caminham e n\u00e3o se fatigam.", "Isa\u00edas 40:31"],
+    ["O Senhor \u00e9 o meu pastor; de nada terei falta.", "Salmos 23:1"],
+    ["Estejam vigilantes, mantenham-se firmes na f\u00e9, sejam homens de coragem, sejam fortes.", "1 Cor\u00edntios 16:13"],
+    ["Confie no Senhor de todo o seu cora\u00e7\u00e3o e n\u00e3o se apoie em seu pr\u00f3prio entendimento.", "Prov\u00e9rbios 3:5"],
+    ["Se Deus \u00e9 por n\u00f3s, quem ser\u00e1 contra n\u00f3s?", "Romanos 8:31"],
+    ["Pois Deus n\u00e3o nos deu esp\u00edrito de covardia, mas de poder, de amor e de equil\u00edbrio.", "2 Tim\u00f3teo 1:7"]
+  ];
+  VERSES.ptpt = VERSES.ptbr;
+  VERSES.en = [
+    ["Have I not commanded you? Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you wherever you go.", "Joshua 1:9"],
+    ["I can do all things through Christ who strengthens me.", "Philippians 4:13"],
+    ["But those who hope in the Lord will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.", "Isaiah 40:31"],
+    ["The Lord is my shepherd, I lack nothing.", "Psalm 23:1"],
+    ["Be on your guard; stand firm in the faith; be courageous; be strong.", "1 Corinthians 16:13"],
+    ["Trust in the Lord with all your heart and lean not on your own understanding.", "Proverbs 3:5"],
+    ["If God is for us, who can be against us?", "Romans 8:31"],
+    ["For God has not given us a spirit of fear, but of power, of love and of a sound mind.", "2 Timothy 1:7"]
+  ];
+  VERSES.es = [
+    ["\u00bfNo te he mandado que te esfuerces y seas valiente? No temas ni desmayes, porque el Se\u00f1or tu Dios estar\u00e1 contigo dondequiera que vayas.", "Josu\u00e9 1:9"],
+    ["Todo lo puedo en Cristo que me fortalece.", "Filipenses 4:13"],
+    ["Pero los que esperan en el Se\u00f1or renovar\u00e1n sus fuerzas; levantar\u00e1n las alas como las \u00e1guilas, correr\u00e1n y no se cansar\u00e1n, caminar\u00e1n y no se fatigar\u00e1n.", "Isa\u00edas 40:31"],
+    ["El Se\u00f1or es mi pastor, nada me faltar\u00e1.", "Salmos 23:1"],
+    ["Velad, estad firmes en la fe; portaos varonilmente, y esforzaos.", "1 Corintios 16:13"],
+    ["Conf\u00eda en el Se\u00f1or de todo tu coraz\u00f3n y no te apoyes en tu propia prudencia.", "Proverbios 3:5"],
+    ["Si Dios es por nosotros, \u00bfqui\u00e9n contra nosotros?", "Romanos 8:31"],
+    ["Porque no nos ha dado Dios esp\u00edritu de cobard\u00eda, sino de poder, de amor y de dominio propio.", "2 Timoteo 1:7"]
+  ];
+  VERSES.de = [
+    ["Habe ich dir nicht geboten, dass du getrost und unverzagt sein sollst? Lass dir nicht grauen und entsetze dich nicht; denn der Herr, dein Gott, ist mit dir in allem, was du tun wirst.", "Josua 1:9"],
+    ["Ich vermag alles durch den, der mich m\u00e4chtig macht, Christus.", "Philipper 4:13"],
+    ["Aber die auf den Herrn harren, kriegen neue Kraft, dass sie auffahren mit Fl\u00fcgeln wie Adler, dass sie laufen und nicht matt werden, dass sie wandeln und nicht m\u00fcde werden.", "Jesaja 40:31"],
+    ["Der Herr ist mein Hirte, mir wird nichts mangeln.", "Psalm 23:1"],
+    ["Wachet, steht im Glauben, seid mutig und seid stark!", "1 Korinther 16:13"],
+    ["Verlass dich auf den Herrn von ganzem Herzen und verlass dich nicht auf deinen Verstand.", "Spr\u00fcche 3:5"],
+    ["Ist Gott f\u00fcr uns, wer kann wider uns sein?", "R\u00f6mer 8:31"],
+    ["Denn Gott hat uns nicht gegeben den Geist der Furcht, sondern der Kraft und der Liebe und der Besonnenheit.", "2 Timotheus 1:7"]
+  ];
+  let verseIdx = 0;
+  function showVerse(){
+    const arr = (VERSES[lang] && VERSES[lang].length) ? VERSES[lang] : (VERSES.ptbr || []);
+    if (!arr.length) return;
+    if (verseIdx >= arr.length) verseIdx = 0;
+    const v = arr[verseIdx];
+    const vs = document.querySelector('[data-i18n-html="verse"]');
+    const vr = document.querySelector('[data-i18n="verse_ref"]');
+    if (vs) vs.innerHTML = '\u201c' + v[0] + '\u201d';
+    if (vr) vr.textContent = v[1];
+  }
+  function rotateVerse(){
+    const arr = (VERSES[lang] && VERSES[lang].length) ? VERSES[lang] : (VERSES.ptbr || []);
+    if (arr.length) { verseIdx = Math.floor(Math.random() * arr.length); showVerse(); }
+  }
+  const VDUR = 40;
+  let vLeft = VDUR;
+  function renderVTimer(){
+    const el = document.getElementById('vTimer');
+    if (!el) return;
+    const lbl = (DICT[lang] && DICT[lang].next_verse) ? DICT[lang].next_verse : 'Pr\u00f3ximo vers\u00edculo';
+    el.textContent = lbl + ': ' + vLeft + 's';
+  }
+  function tickVerse(){
+    vLeft--;
+    if (vLeft <= 0) { rotateVerse(); vLeft = VDUR; }
+    renderVTimer();
+  }
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+  function fmt(n){ try { return new Intl.NumberFormat(LOCALES[lang]).format(n); } catch(e){ return ''+n; } }
+
+  window.I18N = {
+    t(k){ return (DICT[lang] && DICT[lang][k] != null) ? DICT[lang][k] : k; },
+    onFinish(score){ if (score > best){ best = score; localStorage.setItem('souls_best', String(best)); } }
+  };
+
+  const rankList = document.getElementById('rankList');
+  function renderRank(){
+    const T = window.I18N.t;
+    const list = [
+      {n:'Souls', s:1000000000, boss:true},
+      {n:'Suguru', s:100000, boss2:true},
+      {n:'Anderson', s:50000},
+      {n:'Matheus', s:30000},
+      {n:'Kaleu', s:20000},
+      {n:'Ryan', s:10000},
+      {n:'Bia', s:5000},
+      {n:'L\u00e9o', s:2500},
+      {n:'Jo\u00e3o', s:1200},
+      {n:'Lucas', s:800},
+      {n:'Pedro', s:500},
+      {n:'Ana', s:300},
+      {n:'Gabriel', s:200},
+      {n:'Rafa', s:100}
+    ];
+    if (best > 0) list.push({n:name, s:best, you:true});
+    list.sort((a,b) => b.s - a.s);
+    rankList.innerHTML = '';
+    list.forEach((p,i) => {
+      const row = document.createElement('div');
+      row.className = 'rankrow' + (i<3 ? ' r'+(i+1) : '') + (p.you ? ' you' : '');
+      const tag = p.boss ? ('<small>'+esc(T('boss_tag'))+'</small>') : p.boss2 ? ('<small>'+esc(T('boss2_tag'))+'</small>') : (p.you ? ('<small>'+esc(T('rank_you'))+'</small>') : '');
+      row.innerHTML = '<div class="pos">'+(i+1)+'</div><div class="nm">'+esc(p.n)+tag+'</div><div class="pts">'+fmt(p.s)+'</div>';
+      rankList.appendChild(row);
+    });
+  }
+
+  const shopList = document.getElementById('shopList');
+  const shopBal = document.getElementById('shopBal');
+  function renderShop(){
+    const T = window.I18N.t;
+    const W = window.SoulsWallet;
+    if (!W || !shopList) return;
+    if (shopBal) shopBal.textContent = fmt(W.coins());
+    shopList.innerHTML = '';
+    (window.SOULS_SKINS || []).forEach(sk => {
+      const owned = W.has(sk.id);
+      const equipped = W.equipped() === sk.id;
+      const card = document.createElement('div');
+      card.className = 'shopcard' + (equipped ? ' equipped' : '');
+      const prHtml = '<div class="pr"><span>\ud83c\udfc6</span>' + fmt(sk.price) + '</div>';
+      let btn;
+      if (equipped) btn = '<button class="shopbtn on" disabled>' + esc(T('shop_equipped')) + '</button>';
+      else if (owned) btn = '<button class="shopbtn equip" data-equip="' + sk.id + '">' + esc(T('shop_equip')) + '</button>';
+      else { const can = W.coins() >= sk.price; btn = '<button class="shopbtn" data-buy="' + sk.id + '"' + (can ? '' : ' disabled title="' + esc(T('shop_locked')) + '"') + '>' + esc(T('shop_buy')) + '</button>'; }
+      card.innerHTML = '<div class="ch-box"><div class="crosshair ch-' + sk.id + '">' + (window.SOULS_SKIN[sk.id] ? window.SOULS_SKIN[sk.id].html : '') + '</div></div>'
+        + '<div class="nm">' + esc(T('sk_' + sk.id)) + '</div>'
+        + '<div class="ds">' + esc(T('skd_' + sk.id)) + '</div>'
+        + (owned ? '' : prHtml)
+        + btn;
+      shopList.appendChild(card);
+    });
+    shopList.querySelectorAll('[data-buy]').forEach(b => b.addEventListener('click', () => {
+      if (W.buy(b.getAttribute('data-buy'))) { W.equip(b.getAttribute('data-buy')); renderShop(); }
+    }));
+    shopList.querySelectorAll('[data-equip]').forEach(b => b.addEventListener('click', () => {
+      W.equip(b.getAttribute('data-equip')); renderShop();
+    }));
+  }
+
+  function applyLang(){
+    const T = window.I18N.t;
+    document.documentElement.setAttribute('lang', LOCALES[lang]);
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = T(el.getAttribute('data-i18n')); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = T(el.getAttribute('data-i18n-html')); });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', T(el.getAttribute('data-i18n-ph'))); });
+    document.documentElement.style.setProperty('--sugtxt', '"' + T('dev_sug') + '"');
+    const pn = document.getElementById('profName'); if (pn) pn.textContent = name;
+    const pa = document.getElementById('profAv'); if (pa) pa.textContent = (name.trim()[0] || 'S').toUpperCase();
+    document.querySelectorAll('.langopt').forEach(b => b.classList.toggle('active', b.getAttribute('data-lang') === lang));
+    const ln = document.getElementById('langName'); if (ln) ln.textContent = (LANG_NAMES[lang] || lang);
+    showVerse();
+    renderVTimer();
+    if (window.__soulsRefresh) window.__soulsRefresh();
+  }
+
+  function setLang(l){ if (!DICT[l]) return; lang = l; localStorage.setItem('souls_lang', l); applyLang(); }
+
+  const LANG_ORDER = ['ptbr','ptpt','en','es','de'];
+  const LANG_NAMES = { ptbr:'Portugu\u00eas (BR)', ptpt:'Portugu\u00eas (PT)', en:'English', es:'Espa\u00f1ol', de:'Deutsch' };
+  function cycleLang(dir){ let i = LANG_ORDER.indexOf(lang); if (i < 0) i = 0; i = (i + dir + LANG_ORDER.length) % LANG_ORDER.length; setLang(LANG_ORDER[i]); }
+
+  const scr = id => document.getElementById(id);
+  function show(id){ const s = scr(id); if (s) s.classList.add('show'); }
+  function hide(id){ const s = scr(id); if (s) s.classList.remove('show'); }
+
+  const on = (id, fn) => { const e = scr(id); if (e) e.addEventListener('click', fn); };
+  on('rankBtn', () => { renderRank(); show('rankScreen'); });
+  on('rankClose', () => hide('rankScreen'));
+  on('shopBtn', () => { renderShop(); show('shopScreen'); });
+  on('shopClose', () => hide('shopScreen'));
+  const OWNER_CODE = 'soulsjr2013#@2013';
+  const ownerMsg = scr('ownerMsg');
+  on('ownerDot', () => { const i = scr('ownerInput'); if (i) i.value = ''; if (ownerMsg){ ownerMsg.textContent = ''; ownerMsg.className = 'owner-msg'; } show('ownerScreen'); if (i) i.focus(); });
+  on('ownerClose', () => hide('ownerScreen'));
+  function tryOwner(){
+    const T = window.I18N.t;
+    const v = (scr('ownerInput').value || '').trim();
+    if (!v) return;
+    if (v === OWNER_CODE) {
+      if (window.SoulsWallet) window.SoulsWallet.unlockAll();
+      if (ownerMsg){ ownerMsg.textContent = T('owner_ok'); ownerMsg.className = 'owner-msg ok'; }
+    } else {
+      let left = 0;
+      if (window.SoulsWallet) left = window.SoulsWallet.penalize(1000);
+      if (ownerMsg){ ownerMsg.textContent = T('owner_bad').replace('{left}', fmt(left)); ownerMsg.className = 'owner-msg bad'; }
+    }
+    scr('ownerInput').value = '';
+    renderShop();
+  }
+  on('ownerConfirm', tryOwner);
+  const oi = scr('ownerInput'); if (oi) oi.addEventListener('keydown', e => { if (e.key === 'Enter') tryOwner(); });
+  // modo dono: tocar 7x no logo SOULS libera todas as miras
+  (function(){
+    const logo = document.querySelector('.logo');
+    if (!logo || !window.SoulsWallet) return;
+    let n = 0, t = 0;
+    logo.style.cursor = 'pointer';
+    logo.addEventListener('click', () => {
+      const now = Date.now();
+      if (now - t > 1500) n = 0;
+      t = now; n++;
+      if (n >= 7) {
+        n = 0;
+        window.SoulsWallet.unlockAll();
+        if (document.getElementById('shopScreen').classList.contains('show')) renderShop();
+        try { alert('\ud83d\udd13 Modo dono ativado! Todas as miras foram liberadas.'); } catch(e){}
+      }
+    });
+  })();
+  on('nameBtn', () => { const i = scr('nameInput'); if (i) i.value = name; show('nameScreen'); if (i) i.focus(); });
+  on('nameClose', () => hide('nameScreen'));
+  on('nameConfirm', () => { const v = (scr('nameInput').value || '').trim(); name = v || 'Souls'; localStorage.setItem('souls_name', name); applyLang(); hide('nameScreen'); });
+  const ni = scr('nameInput'); if (ni) ni.addEventListener('keydown', e => { if (e.key === 'Enter') scr('nameConfirm').click(); });
+  on('langBtn', () => show('langScreen'));
+  on('langPrev', () => cycleLang(-1));
+  on('langNext', () => cycleLang(1));
+  on('resetProgress', () => { const p = scr('settings'); if (p) p.hidden = true; show('resetScreen'); });
+  on('resetCancel', () => hide('resetScreen'));
+  on('resetNo', () => hide('resetScreen'));
+  on('resetYes', () => {
+    ['souls_coins','souls_skins','souls_skin','souls_best','souls_name','souls_settings'].forEach(k => { try { localStorage.removeItem(k); } catch(e){} });
+    try { location.reload(); } catch(e){}
+  });
+  on('langClose', () => hide('langScreen'));
+  document.querySelectorAll('.langopt').forEach(b => b.addEventListener('click', () => { setLang(b.getAttribute('data-lang')); hide('langScreen'); }));
+  document.querySelectorAll('.screen').forEach(s => s.addEventListener('click', e => { if (e.target === s) s.classList.remove('show'); }));
+
+  verseIdx = Math.floor(Math.random() * 8);
+  applyLang();
+  setInterval(tickVerse, 1000);
+})();
+
+</script>
+</body>
+</html>
